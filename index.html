@@ -336,6 +336,7 @@ body.fullscreen .timer-card{max-width:420px}
     <div class="splash-sub">Deep Work Protocol</div>
   </div>
 </div>
+<script>setTimeout(function(){var s=document.getElementById('splash');if(s){s.style.transition='opacity .5s';s.style.opacity='0';setTimeout(function(){s.style.display='none'},500)}},700)</script>
 
 <div id="app">
   <nav>
@@ -1054,10 +1055,6 @@ if(S.autoResume&&S.sec>0&&S.sec<S.total)startTimer();
 addEvents();
 spawnParticles();
 if(S.streak>=3)showStreakFire();
-var splash=document.getElementById('splash');
-function dismissSplash(){if(splash){splash.style.opacity='0';setTimeout(function(){if(splash&&splash.parentNode)splash.parentNode.removeChild(splash);splash=null},600)}}
-setTimeout(dismissSplash,700);
-setTimeout(function(){if(splash){splash.style.display='none'}},2000);
 var lastVisit=localStorage.getItem('focusos:lastVisit');var today=dk(new Date());if(lastVisit&&lastVisit!==today){var diff=Math.floor((new Date(today)-new Date(lastVisit))/864e5);if(diff===1)toast('Welcome back! Keep the streak alive 🔥');else if(diff>1)toast('Welcome back! '+diff+' days since last session — let\'s rebuild')}localStorage.setItem('focusos:lastVisit',today)
 </script>
 </body>
