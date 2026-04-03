@@ -981,7 +981,7 @@ document.getElementById('bgUpload').onchange=function(e){const f=e.target.files[
 document.getElementById('blockDismiss').onclick=function(){document.getElementById('blockOverlay').classList.remove('show')};
 window.addEventListener('keydown',function(e){const a=document.activeElement;if(a&&['INPUT','TEXTAREA'].includes(a.tagName))return;if(e.code==='Space'){e.preventDefault();startTimer()}if(e.key==='r'||e.key==='R')resetTimer();if(e.key==='s'||e.key==='S')skipSession();if(e.key==='1')setMode('focus');if(e.key==='2')setMode('short');if(e.key==='3')setMode('long');if(e.key==='f'||e.key==='F')toggleFS()});
 window.addEventListener('click',function(){playClick()});
-document.querySelectorAll('.mobile-nav-btn').forEach(function(b){b.onclick=function(){setPage(b.dataset.page);updateMobileNav()}})
+document.querySelectorAll('.mobile-nav-btn').forEach(function(b){b.onclick=function(){setPage(b.dataset.page);updateMobileNav()}})}
 
 // Tab-switch detection
 var tabSwitches=0;
