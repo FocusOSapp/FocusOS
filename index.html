@@ -59,8 +59,8 @@ body::after{content:"";position:fixed;inset:0;background:linear-gradient(180deg,
 .empty-state p{font-size:14px;line-height:1.5}
 
 /* Splash */
-.splash{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(circle at 50% 40%,rgba(125,214,255,.1),rgba(3,3,8,.97));z-index:9999;opacity:1;transition:opacity .8s ease,visibility .8s ease;backdrop-filter:blur(24px)}
-.splash.hide{opacity:0;visibility:hidden;pointer-events:none}
+.splash{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(circle at 50% 40%,rgba(125,214,255,.1),rgba(3,3,8,.97));z-index:9999;backdrop-filter:blur(24px);transition:opacity .6s ease}
+.splash.hide{opacity:0;pointer-events:none}
 .splash-inner{display:flex;flex-direction:column;align-items:center;gap:20px;animation:fadeIn .8s ease}
 .splash-icon{width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,var(--accent),var(--accent2));animation:pulseGlow 2s ease-in-out infinite,breathe 3s ease-in-out infinite}
 .splash-title{font-size:36px;font-weight:900;letter-spacing:-.5px;color:#f0f1f8}
@@ -334,7 +334,7 @@ body.fullscreen .timer-card{max-width:420px}
     <div class="splash-sub">Deep Work Protocol</div>
   </div>
 </div>
-<script>setTimeout(function(){var s=document.getElementById('splash');if(s){s.classList.add('hide');setTimeout(function(){s.style.display='none'},800)}},1000)</script>
+<script>setTimeout(function(){var s=document.getElementById('splash');if(s){s.classList.add('hide');setTimeout(function(){s.parentNode.removeChild(s)},700)}},800)</script>
 
 <div id="app">
   <nav>
