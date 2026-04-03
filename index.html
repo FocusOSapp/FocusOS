@@ -345,6 +345,7 @@ body.fullscreen .timer-card{max-width:420px}
       <button class="nav-tab" data-page="stats">Stats</button>
       <button class="nav-tab" data-page="habits">Habits</button>
       <button class="nav-tab" data-page="achievements">Achievements</button>
+      <button class="nav-tab" data-page="learn">Learn</button>
       <button class="nav-tab" data-page="leaderboard">Leaderboard</button>
       <button class="nav-tab" data-page="themes">Themes</button>
       <button class="nav-tab" data-page="settings">Settings</button>
@@ -553,6 +554,13 @@ body.fullscreen .timer-card{max-width:420px}
       <div class="achievements-grid" id="achievementsGrid"></div>
     </section>
 
+    <!-- Learn -->
+    <section class="page" data-id="learn">
+      <h2 style="font-size:26px;font-weight:900;margin-bottom:8px">Learn & Grow</h2>
+      <p style="color:var(--text2);font-size:14px;margin-bottom:18px">Curated reads on discipline, focus, motivation, and self-mastery.</p>
+      <div id="learnContainer"></div>
+    </section>
+
     <!-- Leaderboard -->
     <section class="page" data-id="leaderboard">
       <h2 style="font-size:26px;font-weight:900;margin-bottom:8px">Leaderboard</h2>
@@ -640,6 +648,7 @@ body.fullscreen .timer-card{max-width:420px}
       <button class="mobile-nav-btn" data-page="stats"><span class="icon">📊</span>Stats</button>
       <button class="mobile-nav-btn" data-page="habits"><span class="icon">🌱</span>Habits</button>
       <button class="mobile-nav-btn" data-page="achievements"><span class="icon">🏆</span>Awards</button>
+      <button class="mobile-nav-btn" data-page="learn"><span class="icon">📚</span>Learn</button>
       <button class="mobile-nav-btn" data-page="themes"><span class="icon">🎨</span>Themes</button>
     </div>
   </div>
@@ -715,6 +724,39 @@ const DAILY_CHALLENGES=[
   {id:'c2',text:'Focus for 60+ minutes today',xp:150,check:function(s){return s.todayMins>=60}},
   {id:'c3',text:'Complete a session without skipping',xp:80,check:function(s){return s.skipped===0&&s.done>=1}},
   {id:'c4',text:'Score 80+ on a focus session',xp:120,check:function(s){return s.memory.length>0&&s.memory[0].sc>=80}}
+];
+
+const LEARN_POSTS=[
+  {cat:'Focus',icon:'🎯',posts:[
+    {title:'Deep Work: Rules for Focused Success',desc:'Cal Newport\'s framework for producing elite-level work in less time.',url:'https://www.calnewport.com/deep-work/'},
+    {title:'The Pomodoro Technique: A Complete Guide',desc:'How short, timed work bursts can transform your productivity.',url:'https://todoist.com/productivity-methods/pomodoro-technique'},
+    {title:'How to Improve Your Concentration',desc:'Science-backed strategies to train your attention span.',url:'https://www.healthline.com/nutrition/how-to-increase-concentration'},
+    {title:'Flow: The Psychology of Optimal Experience',desc:'Mihaly Csikszentmihalyi on entering the zone of peak performance.',url:'https://fs.blog/flow-state/'}
+  ]},
+  {cat:'Discipline',icon:'⚡',posts:[
+    {title:'The Discipline Equals Freedom Mindset',desc:'Jocko Willink on why discipline is the path to true freedom.',url:'https://jockowillink.com/'},
+    {title:'Atomic Habits: Tiny Changes, Remarkable Results',desc:'James Clear on building systems that make discipline automatic.',url:'https://jamesclear.com/atomic-habits-summary'},
+    {title:'The Marshmallow Experiment and Delayed Gratification',desc:'Why the ability to wait predicts lifelong success.',url:'https://www.simplypsychology.org/marshmallow-test.html'},
+    {title:'How to Build Self-Discipline',desc:'Practical steps to strengthen your willpower muscle.',url:'https://www.psychologytoday.com/us/basics/self-control'}
+  ]},
+  {cat:'Motivation',icon:'🔥',posts:[
+    {title:'The Science of Motivation',desc:'What actually drives us — and why willpower isn\'t enough.',url:'https://www.apa.org/topics/motivation'},
+    {title:'Start With Why: How Great Leaders Inspire Action',desc:'Simon Sinek on finding your purpose to fuel persistence.',url:'https://simonsinek.com/start-with-why/'},
+    {title:'Intrinsic vs Extrinsic Motivation',desc:'Understanding what keeps you going when motivation fades.',url:'https://www.verywellmind.com/intrinsic-vs-extrinsic-motivation-2795383'},
+    {title:'The Power of Believing You Can Improve',desc:'Carol Dweck\'s growth mindset research explained.',url:'https://www.ted.com/talks/carol_dweck_the_power_of_believing_that_you_can_improve'}
+  ]},
+  {cat:'Self-Mastery',icon:'🧠',posts:[
+    {title:'Meditation and the Brain',desc:'How mindfulness rewires your brain for better focus and calm.',url:'https://www.health.harvard.edu/blog/mindfulness-meditation-may-ease-anxiety-mental-stress-201401086967'},
+    {title:'The Power of Routine',desc:'Why successful people protect their morning hours fiercely.',url:'https://hbr.org/2019/04/the-science-of-successful-habits'},
+    {title:'Digital Minimalism',desc:'Cal Newport on reclaiming your attention from technology.',url:'https://www.calnewport.com/books/digital-minimalism/'},
+    {title:'The Art of Saying No',desc:'Why protecting your time is the ultimate productivity hack.',url:'https://waitbutwhy.com/2013/08/putting-time-in-perspective.html'}
+  ]},
+  {cat:'Productivity',icon:'⚙️',posts:[
+    {title:'Getting Things Done (GTD) Method',desc:'David Allen\'s system for stress-free productivity.',url:'https://gettingthingsdone.com/'},
+    {title:'Time Blocking: The Ultimate Guide',desc:'How to plan your day for maximum output and minimum burnout.',url:'https://todoist.com/productivity-methods/time-blocking'},
+    {title:'The Two-Minute Rule',desc:'If it takes less than two minutes, do it now.',url:'https://jamesclear.com/two-minute-rule'},
+    {title:'Parkinson\'s Law: Work Expands to Fill Time',desc:'Why tighter deadlines make you more productive.',url:'https://fs.blog/parkinsons-law/'}
+  ]}
 ];
 
 let GM={xp:0,streak:1};
@@ -864,7 +906,7 @@ function clearMem(){S.memory=[];S.done=0;S.totalSec=0;S.week=[0,0,0,0,0,0,0];S.t
 
 function resetAll(){localStorage.removeItem(KEY);S=Object.assign({},DEFAULTS,{week:[...DEFAULTS.week],rituals:DEFAULTS.rituals.map(function(r){return Object.assign({},r)}),habits:[],achievements:[]});S.weekAnchor=wkAnchor(new Date());S.todayKey=dk(new Date());S.total=mins(S.mode)*60;S.sec=S.total;renderAll();toast('All data reset')}
 
-function renderAll(){renderTimer();renderDots();renderTmpl('All');renderFilters();renderBg();renderPal();renderMemory();renderStats();renderTasks();renderRituals();renderHabits();renderYear();renderToday();document.getElementById('objectiveInput').value=S.objective||'';renderLvl();applyPal();applyBg();syncToggles();document.getElementById('lockPill').textContent=S.lock?'Locked':'Lock';renderAchievements();renderHeatmap();renderChallenges();renderPersonalBests()}
+function renderAll(){renderTimer();renderDots();renderTmpl('All');renderFilters();renderBg();renderPal();renderMemory();renderStats();renderTasks();renderRituals();renderHabits();renderYear();renderToday();document.getElementById('objectiveInput').value=S.objective||'';renderLvl();applyPal();applyBg();syncToggles();document.getElementById('lockPill').textContent=S.lock?'Locked':'Lock';renderAchievements();renderHeatmap();renderChallenges();renderPersonalBests();renderLearn()}
 
 function syncToggles(){document.getElementById('togBreaks').classList.toggle('on',S.autoBreak);document.getElementById('togFocus').classList.toggle('on',S.autoFocus);document.getElementById('togSound').classList.toggle('on',S.sound);document.getElementById('togResume').classList.toggle('on',S.autoResume)}
 
@@ -899,6 +941,8 @@ function renderHeatmap(){var container=document.getElementById('heatmapContainer
 function renderChallenges(){var container=document.getElementById('challengesContainer');if(!container)return;container.innerHTML='';var today=dk(new Date());if(S.lastChallengeDate!==today){S.challengesCompleted=[];S.lastChallengeDate=''}DAILY_CHALLENGES.forEach(function(c){var done=S.challengesCompleted&&S.challengesCompleted.indexOf(c.id)!==-1;var card=document.createElement('div');card.className='card lift';card.style.padding='14px';card.style.opacity=done?'.5':'1';card.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:13px;font-weight:600">'+c.text+'</div><div style="font-size:11px;color:var(--text2);margin-top:2px">+'+c.xp+' XP</div></div><div style="font-size:20px">'+(done?'✅':'🎯')+'</div></div>';container.appendChild(card)})}
 
 function renderPersonalBests(){var container=document.getElementById('personalBestsContainer');if(!container)return;container.innerHTML='';var items=[{label:'Best Session Score',value:S.personalBest.score+' pts',icon:'⭐'},{label:'Most Sessions',value:S.personalBest.sessions,icon:'🎯'},{label:'Most Minutes Today',value:S.personalBest.minutes+'m',icon:'⏱️'},{label:'Longest Streak',value:S.personalBest.streak+' days',icon:'🔥'}];items.forEach(function(item){var row=document.createElement('div');row.style.display='flex';row.style.justifyContent='space-between';row.style.alignItems='center';row.style.padding='10px 0';row.style.borderBottom='1px solid var(--border)';row.innerHTML='<div style="font-size:13px">'+item.icon+' '+item.label+'</div><div style="font-weight:700;font-size:14px">'+item.value+'</div>';container.appendChild(row)})}
+
+function renderLearn(){var container=document.getElementById('learnContainer');if(!container)return;container.innerHTML='';LEARN_POSTS.forEach(function(cat){var section=document.createElement('div');section.style.marginBottom='28px';var header=document.createElement('h3');header.style.fontSize='16px';header.style.fontWeight='700';header.style.marginBottom='12px';header.style.display='flex';header.style.alignItems='center';header.style.gap='8px';header.innerHTML=cat.icon+' '+cat.cat;section.appendChild(header);var grid=document.createElement('div');grid.style.display='grid';grid.style.gridTemplateColumns='repeat(auto-fit,minmax(260px,1fr))';grid.style.gap='12px';cat.posts.forEach(function(post){var card=document.createElement('a');card.className='card lift';card.style.textDecoration='none';card.style.color='inherit';card.style.display='block';card.style.cursor='pointer';card.href=post.url;card.target='_blank';card.rel='noopener noreferrer';card.innerHTML='<div style="font-size:14px;font-weight:600;margin-bottom:6px">'+post.title+'</div><div style="font-size:12px;color:var(--text2);line-height:1.5">'+post.desc+'</div><div style="font-size:11px;color:var(--accent);margin-top:8px">Read more →</div>';grid.appendChild(card)});section.appendChild(grid);container.appendChild(section)})}
 
 function getFocusLevel(){var xp=S.xp||0;var level=FOCUS_LEVELS[0];for(var i=FOCUS_LEVELS.length-1;i>=0;i--){if(xp>=FOCUS_LEVELS[i].min){level=FOCUS_LEVELS[i];break}}return level}
 
