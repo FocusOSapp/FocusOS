@@ -6,7 +6,7 @@
 <title>FocusOS — Deep Work Operating System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" onerror="this.onerror=null">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -362,6 +362,7 @@ body.fullscreen .timer-card{max-width:420px}
     <!-- Focus -->
     <section class="page active" data-id="focus">
       <div class="daily-quote" id="dailyQuote"></div>
+      <div style="text-align:center;margin-bottom:16px"><span style="font-size:13px;color:var(--text2)" id="greetingText"></span></div>
       <div class="hero-grid">
         <div class="card timer-card lift">
           <div style="text-transform:uppercase;font-size:11px;letter-spacing:5px;color:var(--text3)">Deep Work Protocol</div>
@@ -392,6 +393,13 @@ body.fullscreen .timer-card{max-width:420px}
         </div>
 
         <div class="side-stack">
+          <div class="card side-card lift support-card">
+            <div class="coffee-icon">☕</div>
+            <h4>Buy me a Coffee</h4>
+            <p>If FocusOS helps you, fuel the build.</p>
+            <img src="./qr.jpg" alt="UPI QR" style="width:140px;height:140px;object-fit:contain;border-radius:14px">
+            <div class="upi">UPI: 9667300766@fam</div>
+          </div>
           <div class="card side-card lift">
             <div class="plant-wrap">
               <svg id="focus-plant" viewBox="0 0 200 260" fill="none">
@@ -430,13 +438,6 @@ body.fullscreen .timer-card{max-width:420px}
                 </g>
               </svg>
             </div>
-          </div>
-          <div class="card side-card lift support-card">
-            <div class="coffee-icon">☕</div>
-            <h4>Buy me a Coffee</h4>
-            <p>If FocusOS helps you, fuel the build.</p>
-            <img src="./qr.jpg" alt="UPI QR" style="width:140px;height:140px;object-fit:contain;border-radius:14px">
-            <div class="upi">UPI: 9667300766@fam</div>
           </div>
         </div>
       </div>
@@ -851,6 +852,10 @@ function showStreakFire(){const el=document.createElement('div');el.className='s
 
 function renderDailyQuote(){const el=document.getElementById('dailyQuote');if(!el)return;const dayOfYear=Math.floor((new Date()-new Date(new Date().getFullYear(),0,0))/864e5);const q=QUOTES[dayOfYear%QUOTES.length];const parts=q.split(' — ');el.innerHTML=parts.length>1?'"'+parts[0]+'"<span class="author">— '+parts[1]+'</span>':'"'+q+'"'}
 
+function renderGreeting(){const el=document.getElementById('greetingText');if(!el)return;const h=new Date().getHours();let g='Good evening';if(h<12)g='Good morning';else if(h<17)g='Good afternoon';el.textContent=g+', '+getUsername()}
+
+function getUsername(){const stored=localStorage.getItem('focusos:user');if(stored)return stored;const names=['Warrior','Creator','Builder','Champion','Legend'];const n=names[Math.floor(Math.random()*names.length)];localStorage.setItem('focusos:user',n);return n}
+
 function updateTimerBreathing(){const wrap=document.querySelector('.circle-wrap');if(!wrap)return;if(S.running)wrap.classList.add('running');else wrap.classList.remove('running')}
 
 function updateMobileNav(){document.querySelectorAll('.mobile-nav-btn').forEach(function(b){b.classList.toggle('active',b.dataset.page===page)})}
@@ -957,11 +962,13 @@ anchors();ST.sessions=S.done;ST.mins=Math.floor(S.totalSec/60);ST.tasks=S.tasks.
 S.total=mins(S.mode)*60;if(!S.sec||S.sec>S.total)S.sec=S.total;
 renderAll();setPlant(false);
 renderDailyQuote();
+renderGreeting();
 if(S.autoResume&&S.sec>0&&S.sec<S.total)startTimer();
 addEvents();
 spawnParticles();
 if(S.streak>=3)showStreakFire();
-var splash=document.getElementById('splash');if(splash)setTimeout(function(){splash.classList.add('hide')},1200);
+var splash=document.getElementById('splash');if(splash){setTimeout(function(){splash.classList.add('hide')},800);setTimeout(function(){splash.style.display='none'},1600)}
+var lastVisit=localStorage.getItem('focusos:lastVisit');var today=dk(new Date());if(lastVisit&&lastVisit!==today){var diff=Math.floor((new Date(today)-new Date(lastVisit))/864e5);if(diff===1)toast('Welcome back! Keep the streak alive 🔥');else if(diff>1)toast('Welcome back! '+diff+' days since last session — let\'s rebuild')}localStorage.setItem('focusos:lastVisit',today)
 </script>
 </body>
 </html>
