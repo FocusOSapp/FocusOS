@@ -513,6 +513,18 @@ body.fullscreen .timer-card{max-width:420px}
           <div><code style="background:var(--surface2);padding:4px 10px;border-radius:8px">1/2/3</code> Switch modes</div>
         </div>
       </div>
+      <div class="card lift" style="margin-top:18px">
+        <h4 style="font-size:14px;margin-bottom:12px">Activity Heatmap</h4>
+        <div id="heatmapContainer"></div>
+      </div>
+      <div class="card lift" style="margin-top:18px">
+        <h4 style="font-size:14px;margin-bottom:12px">Personal Bests</h4>
+        <div id="personalBestsContainer"></div>
+      </div>
+      <div class="card lift" style="margin-top:18px">
+        <h4 style="font-size:14px;margin-bottom:12px">Daily Challenges</h4>
+        <div id="challengesContainer" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
     </section>
 
     <!-- Habits -->
@@ -674,22 +686,35 @@ const QUOTES=[
 const BLOCKED=['instagram.com','youtube.com','twitter.com','x.com','reddit.com','t.co','tiktok.com','facebook.com','snapchat.com'];
 
 const ACHIEVEMENTS=[
-  {id:'first',name:'First Blood',desc:'Complete your first focus session',icon:'🎯',xp:50,check:s=>s.done>=1},
-  {id:'five',name:'Five Alive',desc:'Complete 5 focus sessions',icon:'🔥',xp:100,check:s=>s.done>=5},
-  {id:'ten',name:'Double Digits',desc:'Complete 10 focus sessions',icon:'💎',xp:200,check:s=>s.done>=10},
-  {id:'twentyfive',name:'Quarter Century',desc:'Complete 25 focus sessions',icon:'🏆',xp:500,check:s=>s.done>=25},
-  {id:'fifty',name:'Half Century',desc:'Complete 50 focus sessions',icon:'👑',xp:1000,check:s=>s.done>=50},
-  {id:'streak3',name:'Hat Trick',desc:'3-day streak',icon:'⚡',xp:100,check:s=>s.streak>=3},
-  {id:'streak7',name:'Week Warrior',desc:'7-day streak',icon:'🗡️',xp:300,check:s=>s.streak>=7},
-  {id:'streak30',name:'Iron Will',desc:'30-day streak',icon:'🛡️',xp:2000,check:s=>s.streak>=30},
-  {id:'hour',name:'Hour Power',desc:'Focus for 60 minutes today',icon:'⏱️',xp:150,check:s=>s.todayMins>=60},
-  {id:'twohour',name:'Deep Diver',desc:'Focus for 120 minutes today',icon:'🌊',xp:400,check:s=>s.todayMins>=120},
-  {id:'threehour',name:'Monk Mode',desc:'Focus for 180 minutes today',icon:'🧘',xp:800,check:s=>s.todayMins>=180},
-  {id:'habit1',name:'Habit Starter',desc:'Add your first habit',icon:'🌱',xp:50,check:s=>s.habits.length>=1},
-  {id:'habit5',name:'Habit Builder',desc:'Track 5 habits',icon:'🏗️',xp:200,check:s=>s.habits.length>=5},
-  {id:'template',name:'Protocol Loaded',desc:'Apply a template',icon:'📋',xp:30,check:s=>s.done>=1},
-  {id:'level5',name:'Rising Star',desc:'Reach Level 5',icon:'⭐',xp:500,check:s=>Math.floor((s.xp||0)/100)>=5},
-  {id:'level10',name:'Focus Master',desc:'Reach Level 10',icon:'🌟',xp:1500,check:s=>Math.floor((s.xp||0)/100)>=10}
+  {id:'first',name:'First Blood',desc:'Complete your first focus session',icon:'🎯',xp:50,check:function(s){return s.done>=1}},
+  {id:'five',name:'Five Alive',desc:'Complete 5 focus sessions',icon:'🔥',xp:100,check:function(s){return s.done>=5}},
+  {id:'ten',name:'Double Digits',desc:'Complete 10 focus sessions',icon:'💎',xp:200,check:function(s){return s.done>=10}},
+  {id:'twentyfive',name:'Quarter Century',desc:'Complete 25 focus sessions',icon:'🏆',xp:500,check:function(s){return s.done>=25}},
+  {id:'fifty',name:'Half Century',desc:'Complete 50 focus sessions',icon:'👑',xp:1000,check:function(s){return s.done>=50}},
+  {id:'streak3',name:'Hat Trick',desc:'3-day streak',icon:'⚡',xp:100,check:function(s){return s.streak>=3}},
+  {id:'streak7',name:'Week Warrior',desc:'7-day streak',icon:'🗡️',xp:300,check:function(s){return s.streak>=7}},
+  {id:'streak30',name:'Iron Will',desc:'30-day streak',icon:'🛡️',xp:2000,check:function(s){return s.streak>=30}},
+  {id:'hour',name:'Hour Power',desc:'Focus for 60 minutes today',icon:'⏱️',xp:150,check:function(s){return s.todayMins>=60}},
+  {id:'twohour',name:'Deep Diver',desc:'Focus for 120 minutes today',icon:'🌊',xp:400,check:function(s){return s.todayMins>=120}},
+  {id:'threehour',name:'Monk Mode',desc:'Focus for 180 minutes today',icon:'🧘',xp:800,check:function(s){return s.todayMins>=180}},
+  {id:'habit1',name:'Habit Starter',desc:'Add your first habit',icon:'🌱',xp:50,check:function(s){return s.habits.length>=1}},
+  {id:'habit5',name:'Habit Builder',desc:'Track 5 habits',icon:'🏗️',xp:200,check:function(s){return s.habits.length>=5}},
+  {id:'template',name:'Protocol Loaded',desc:'Apply a template',icon:'📋',xp:30,check:function(s){return s.done>=1}},
+  {id:'level5',name:'Rising Star',desc:'Reach Level 5',icon:'⭐',xp:500,check:function(s){return Math.floor((s.xp||0)/100)>=5}},
+  {id:'level10',name:'Focus Master',desc:'Reach Level 10',icon:'🌟',xp:1500,check:function(s){return Math.floor((s.xp||0)/100)>=10}}
+];
+
+const FOCUS_LEVELS=[
+  {name:'Novice',min:0,icon:'🌱'},{name:'Apprentice',min:100,icon:'📖'},{name:'Focused',min:500,icon:'🎯'},
+  {name:'Dedicated',min:1500,icon:'💪'},{name:'Expert',min:3000,icon:'🔥'},{name:'Master',min:5000,icon:'👑'},
+  {name:'Grandmaster',min:10000,icon:'🏆'},{name:'Legend',min:20000,icon:'⚡'},{name:'Mythic',min:50000,icon:'🌟'}
+];
+
+const DAILY_CHALLENGES=[
+  {id:'c1',text:'Complete 3 focus sessions today',xp:100,check:function(s){return s.done>=3}},
+  {id:'c2',text:'Focus for 60+ minutes today',xp:150,check:function(s){return s.todayMins>=60}},
+  {id:'c3',text:'Complete a session without skipping',xp:80,check:function(s){return s.skipped===0&&s.done>=1}},
+  {id:'c4',text:'Score 80+ on a focus session',xp:120,check:function(s){return s.memory.length>0&&s.memory[0].sc>=80}}
 ];
 
 let GM={xp:0,streak:1};
@@ -705,7 +730,10 @@ const DEFAULTS={
   bgMode:'aurora',bgCustom:'',palette:'cool',
   tasks:[],rituals:[{l:'Hydrated',d:false},{l:'Notifications off',d:false},{l:'Goal written',d:false}],
   habits:[],memory:[],objective:'',ambientVisible:true,
-  achievements:[],totalSessions:0
+  achievements:[],totalSessions:0,
+  personalBest:{sessions:0,minutes:0,streak:0,score:0},
+  heatmap:{},challengesCompleted:[],lastChallengeDate:'',
+  moodHistory:[]
 };
 
 let S={...DEFAULTS};
@@ -775,7 +803,7 @@ function updateStreak(){const tk=dk(new Date());if(!S.lastDate)S.streak=1;else{c
 
 function checkAchievements(){const newUnlocks=[];ACHIEVEMENTS.forEach(a=>{if(!S.achievements.includes(a.id)&&a.check(S)){S.achievements.push(a.id);S.xp+=a.xp;GM.xp+=a.xp;newUnlocks.push(a)}});if(newUnlocks.length){newUnlocks.forEach(a=>{toast('🏆 Achievement: '+a.name+' (+'+a.xp+' XP)')});confetti();renderAchievements();save()}}
 
-function complete(skipped){anchors();if(S.mode==='focus'){const es=Math.max(0,S.total-S.sec);const em=Math.max(1,Math.round(es/60));if(!skipped){S.done++;S.totalSessions++;ST.sessions=S.done;S.totalSec+=es;S.todayMins+=em;ST.mins=Math.floor(S.totalSec/60);const sc=Math.round(score(em));const xp=sc*2;GM.xp+=xp;S.xp+=xp;setPlant(false);const di=(new Date().getDay()+6)%7;S.week[di]+=em;S.memory.unshift({title:S.objective||'Untitled',sc:sc,dur:em,ts:new Date(),note:S.objective||'No objective'});renderMemory();showOv(sc,xp,em);notify(sc,xp);tone(880,220);showXpPopup(xp);checkAchievements()}else{S.skipped++;setPlant(true)}S.cur++;if(S.cur>S.cycle){S.cur=1;setMode('long');if(S.autoBreak)startTimer()}else{if(S.mode==='focus'){setMode('short');if(S.autoBreak)startTimer()}else{setMode('focus');if(S.autoFocus)startTimer()}}updateStats();save()}}
+function complete(skipped){anchors();if(S.mode==='focus'){const es=Math.max(0,S.total-S.sec);const em=Math.max(1,Math.round(es/60));if(!skipped){S.done++;S.totalSessions++;ST.sessions=S.done;S.totalSec+=es;S.todayMins+=em;ST.mins=Math.floor(S.totalSec/60);const sc=Math.round(score(em));const xp=sc*2;GM.xp+=xp;S.xp+=xp;setPlant(false);const di=(new Date().getDay()+6)%7;S.week[di]+=em;S.memory.unshift({title:S.objective||'Untitled',sc:sc,dur:em,ts:new Date(),note:S.objective||'No objective'});renderMemory();showOv(sc,xp,em);notify(sc,xp);tone(880,220);showXpPopup(xp);updatePersonalBest(em,sc);saveHeatmap();checkAchievements();checkDailyChallenges()}else{S.skipped++;setPlant(true)}S.cur++;if(S.cur>S.cycle){S.cur=1;setMode('long');if(S.autoBreak)startTimer()}else{if(S.mode==='focus'){setMode('short');if(S.autoBreak)startTimer()}else{setMode('focus');if(S.autoFocus)startTimer()}}updateStats();save()}}
 
 function renderRituals(){const l=document.getElementById('ritualList');l.innerHTML='';S.rituals.forEach(function(r,i){const item=document.createElement('label');item.className='checklist-item';item.innerHTML='<input type="checkbox" '+(r.d?'checked':'')+'><span>'+r.l+'</span>';item.querySelector('input').onchange=function(e){S.rituals[i].d=e.target.checked;save()};l.appendChild(item)})}
 
@@ -836,13 +864,13 @@ function clearMem(){S.memory=[];S.done=0;S.totalSec=0;S.week=[0,0,0,0,0,0,0];S.t
 
 function resetAll(){localStorage.removeItem(KEY);S=Object.assign({},DEFAULTS,{week:[...DEFAULTS.week],rituals:DEFAULTS.rituals.map(function(r){return Object.assign({},r)}),habits:[],achievements:[]});S.weekAnchor=wkAnchor(new Date());S.todayKey=dk(new Date());S.total=mins(S.mode)*60;S.sec=S.total;renderAll();toast('All data reset')}
 
-function renderAll(){renderTimer();renderDots();renderTmpl('All');renderFilters();renderBg();renderPal();renderMemory();renderStats();renderTasks();renderRituals();renderHabits();renderYear();renderToday();document.getElementById('objectiveInput').value=S.objective||'';renderLvl();applyPal();applyBg();syncToggles();document.getElementById('lockPill').textContent=S.lock?'Locked':'Lock';renderAchievements()}
+function renderAll(){renderTimer();renderDots();renderTmpl('All');renderFilters();renderBg();renderPal();renderMemory();renderStats();renderTasks();renderRituals();renderHabits();renderYear();renderToday();document.getElementById('objectiveInput').value=S.objective||'';renderLvl();applyPal();applyBg();syncToggles();document.getElementById('lockPill').textContent=S.lock?'Locked':'Lock';renderAchievements();renderHeatmap();renderChallenges();renderPersonalBests()}
 
 function syncToggles(){document.getElementById('togBreaks').classList.toggle('on',S.autoBreak);document.getElementById('togFocus').classList.toggle('on',S.autoFocus);document.getElementById('togSound').classList.toggle('on',S.sound);document.getElementById('togResume').classList.toggle('on',S.autoResume)}
 
 function setPage(p){if(S.lock&&p!==page){toast('Locked — finish current block');return}page=p;document.querySelectorAll('.page').forEach(function(x){x.classList.remove('active')});document.querySelector('.page[data-id="'+p+'"]').classList.add('active');document.querySelectorAll('.nav-tab').forEach(function(b){b.classList.toggle('active',b.dataset.page===p)});updateMobileNav()}
 
-function renderLvl(){const l=lvl(GM.xp);const xpPct=(GM.xp||0)%100;document.getElementById('xpPill').textContent='Lv '+l;const fill=document.getElementById('xpBarFill');const label=document.getElementById('xpLabel');if(fill)fill.style.width=xpPct+'%';if(label)label.textContent=xpPct+' / 100 XP to Level '+(l+1)}
+function renderLvl(){var level=getFocusLevel();var l=lvl(GM.xp);var xpPct=(GM.xp||0)%100;document.getElementById('xpPill').textContent=level.icon+' Lv '+l;var fill=document.getElementById('xpBarFill');var label=document.getElementById('xpLabel');if(fill)fill.style.width=xpPct+'%';if(label)label.textContent=xpPct+' / 100 XP to Level '+(l+1)}
 
 function setPlant(sad){const p=document.getElementById('focus-plant');if(p)p.classList.toggle('sad',sad)}
 
@@ -859,6 +887,20 @@ function getUsername(){const stored=localStorage.getItem('focusos:user');if(stor
 function updateTimerBreathing(){const wrap=document.querySelector('.circle-wrap');if(!wrap)return;if(S.running)wrap.classList.add('running');else wrap.classList.remove('running')}
 
 function updateMobileNav(){document.querySelectorAll('.mobile-nav-btn').forEach(function(b){b.classList.toggle('active',b.dataset.page===page)})}
+
+function updatePersonalBest(mins,sc){var changed=false;if(S.done>S.personalBest.sessions){S.personalBest.sessions=S.done;changed=true}if(S.todayMins>S.personalBest.minutes){S.personalBest.minutes=S.todayMins;changed=true}if(S.streak>S.personalBest.streak){S.personalBest.streak=S.streak;changed=true}if(sc>S.personalBest.score){S.personalBest.score=sc;changed=true}if(changed)save()}
+
+function saveHeatmap(){var today=dk(new Date());if(!S.heatmap)S.heatmap={};S.heatmap[today]=S.todayMins;save()}
+
+function checkDailyChallenges(){var today=dk(new Date());if(S.lastChallengeDate===today)return;S.lastChallengeDate=today;S.challengesCompleted=[];DAILY_CHALLENGES.forEach(function(c){if(c.check(S)){S.challengesCompleted.push(c.id);S.xp+=c.xp;GM.xp+=c.xp;toast('🎯 Challenge complete: '+c.text+' (+'+c.xp+' XP)')}});save();renderLvl()}
+
+function renderHeatmap(){var container=document.getElementById('heatmapContainer');if(!container)return;container.innerHTML='';var today=new Date();var weeks=[];for(var w=11;w>=0;w--){var weekDays=[];for(var d=0;d<7;d++){var date=new Date(today);date.setDate(date.getDate()-(w*7+d));var key=dk(date);var mins=S.heatmap[key]||0;weekDays.unshift({key:key,mins:mins,date:date})}weeks.push(weekDays)}var grid=document.createElement('div');grid.style.display='grid';grid.style.gridTemplateColumns='repeat(12,1fr)';grid.style.gap='3px';weeks.forEach(function(week){week.forEach(function(day){var cell=document.createElement('div');cell.style.width='100%';cell.style.aspectRatio='1';cell.style.borderRadius='4px';cell.style.background=day.mins===0?'var(--surface3)':day.mins<30?'rgba(125,214,255,.2)':day.mins<60?'rgba(125,214,255,.4)':day.mins<120?'rgba(125,214,255,.6)':'rgba(125,214,255,.85)';cell.title=day.key+': '+day.mins+'min';grid.appendChild(cell)})});container.appendChild(grid)}
+
+function renderChallenges(){var container=document.getElementById('challengesContainer');if(!container)return;container.innerHTML='';var today=dk(new Date());if(S.lastChallengeDate!==today){S.challengesCompleted=[];S.lastChallengeDate=''}DAILY_CHALLENGES.forEach(function(c){var done=S.challengesCompleted&&S.challengesCompleted.indexOf(c.id)!==-1;var card=document.createElement('div');card.className='card lift';card.style.padding='14px';card.style.opacity=done?'.5':'1';card.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:13px;font-weight:600">'+c.text+'</div><div style="font-size:11px;color:var(--text2);margin-top:2px">+'+c.xp+' XP</div></div><div style="font-size:20px">'+(done?'✅':'🎯')+'</div></div>';container.appendChild(card)})}
+
+function renderPersonalBests(){var container=document.getElementById('personalBestsContainer');if(!container)return;container.innerHTML='';var items=[{label:'Best Session Score',value:S.personalBest.score+' pts',icon:'⭐'},{label:'Most Sessions',value:S.personalBest.sessions,icon:'🎯'},{label:'Most Minutes Today',value:S.personalBest.minutes+'m',icon:'⏱️'},{label:'Longest Streak',value:S.personalBest.streak+' days',icon:'🔥'}];items.forEach(function(item){var row=document.createElement('div');row.style.display='flex';row.style.justifyContent='space-between';row.style.alignItems='center';row.style.padding='10px 0';row.style.borderBottom='1px solid var(--border)';row.innerHTML='<div style="font-size:13px">'+item.icon+' '+item.label+'</div><div style="font-weight:700;font-size:14px">'+item.value+'</div>';container.appendChild(row)})}
+
+function getFocusLevel(){var xp=S.xp||0;var level=FOCUS_LEVELS[0];for(var i=FOCUS_LEVELS.length-1;i>=0;i--){if(xp>=FOCUS_LEVELS[i].min){level=FOCUS_LEVELS[i];break}}return level}
 
 function notify(sc,xp){if(!('Notification' in window)||Notification.permission!=='granted')return;new Notification('FocusOS',{body:'Score '+sc+' · +'+xp+' XP'})}
 
