@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FocusOS — Sanctuary</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#05060c;--surface:rgba(16,18,26,.78);--surface2:rgba(22,23,34,.72);--surface3:rgba(29,31,45,.62);
+  --border:rgba(255,255,255,.08);--text:#f6f7ff;--text2:#aab0c8;--text3:#5f6478;
+  --accent:#7dd6ff;--accent2:#c6a4ff;--accent-glow:rgba(124,92,252,.35);
+  --green:#34d399;--orange:#fbbf24;--red:#f87171;
+  --radius:22px;--radius-sm:12px;--blur:16px;
+  --font:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;
+  --transition:all .35s cubic-bezier(.4,0,.2,1);
+}
+
+body{background:var(--bg);color:var(--text);font-family:var(--font);height:100vh;overflow:hidden;position:relative;}
+body::before{content:"";position:fixed;inset:-25%;background:
+  radial-gradient(circle at 18% 24%,rgba(125,214,255,.18),transparent 28%),
+  radial-gradient(circle at 82% 16%,rgba(125,214,255,.18),transparent 26%),
+  radial-gradient(circle at 48% 82%,rgba(248,113,113,.15),transparent 32%);
+  filter:blur(70px);z-index:-2;animation:float 12s ease-in-out infinite alternate;
+}
+body::after{content:"";position:fixed;inset:0;background:linear-gradient(145deg,rgba(255,255,255,.04),rgba(0,0,0,.05));mix-blend-mode:soft-light;pointer-events:none;z-index:-1;}
+.splash{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(circle at 40% 40%,rgba(125,214,255,.18),rgba(0,0,0,.94)),#04050a;z-index:120;opacity:1;transition:opacity .9s ease, visibility .9s ease;backdrop-filter:blur(16px);}
+.splash.hide{opacity:0;visibility:hidden;}
+.splash-logo{font-size:38px;font-weight:800;letter-spacing:-.6px;color:#f8f9ff;display:flex;align-items:center;gap:12px;animation:splashPop 1s ease;}
+.splash-logo span{color:var(--accent);}
+.splash-pulse{width:70px;height:70px;border-radius:22px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 0 0 rgba(124,92,252,.4);animation:pulse 1.9s ease-in-out infinite, splashFloat 1.6s ease-in-out infinite;}
+
+#app{height:100%;display:flex;flex-direction:column}
+
+nav{display:flex;justify-content:space-between;align-items:center;padding:14px 22px;background:rgba(12,12,18,.86);border-bottom:1px solid var(--border);backdrop-filter:blur(var(--blur));-webkit-backdrop-filter:blur(var(--blur));z-index:10;position:sticky;top:0;box-shadow:0 18px 45px rgba(0,0,0,.35);}
+.logo{font-weight:700;font-size:20px;letter-spacing:-.4px}
+.logo span{color:var(--accent)}
+.nav-tabs{display:flex;gap:8px;background:var(--surface2);padding:5px;border-radius:14px;overflow-x:auto;scrollbar-width:none}
+.nav-tabs::-webkit-scrollbar{display:none}
+.nav-tab{border:none;background:transparent;color:var(--text3);padding:9px 16px;border-radius:11px;font-size:13px;font-weight:600;cursor:pointer;transition:var(--transition)}
+.nav-tab.active{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#0b0c14;box-shadow:0 10px 28px var(--accent-glow)}
+.nav-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.nav-pill{padding:8px 14px;border-radius:18px;border:1px solid var(--border);color:var(--text2);font-size:12px;font-weight:600;display:flex;align-items:center;gap:8px;background:var(--surface2);backdrop-filter:blur(var(--blur));}
+
+main{flex:1;overflow-y:auto;padding:28px 22px 140px;scroll-behavior:smooth;}
+main::-webkit-scrollbar{width:6px}
+main::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+.page{display:none;animation:fade .4s ease}
+.page.active{display:block}
+
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes float{from{transform:translate3d(0,0,0)}to{transform:translate3d(0,-8px,0)}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(124,92,252,.38)}70%{box-shadow:0 0 0 18px rgba(124,92,252,0)}100%{box-shadow:0 0 0 0 rgba(124,92,252,0)}}
+@keyframes confetti-fall{0%{transform:translate3d(0,-20vh,0) rotate(0);}100%{transform:translate3d(0,80vh,0) rotate(720deg);}}
+@keyframes splashPop{0%{transform:translateY(10px) scale(.95);opacity:0}60%{transform:translateY(0) scale(1.04);opacity:1}100%{transform:translateY(0) scale(1)}}
+@keyframes splashFloat{0%{transform:translateY(0)}100%{transform:translateY(-6px)}}
+
+/* Layout */
+.hero-grid{display:grid;grid-template-columns:minmax(520px,960px) 240px;gap:22px;align-items:start;max-width:1400px;width:100%;margin:0 auto 12px;position:relative;padding-top:6px;justify-content:center;}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;max-width:1180px;margin:24px auto 0;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;position:relative;overflow:hidden;box-shadow:0 22px 60px rgba(0,0,0,.32);backdrop-filter:blur(var(--blur));-webkit-backdrop-filter:blur(var(--blur));}
+.card::after{content:"";position:absolute;inset:1px;border-radius:calc(var(--radius) - 1px);border:1px solid rgba(255,255,255,.04);pointer-events:none}
+.lift{transition:transform .25s ease, box-shadow .25s ease}
+.lift:hover{transform:translateY(-4px);box-shadow:0 24px 70px rgba(0,0,0,.36)}
+
+/* Timer */
+.timer-card{padding:30px 32px 24px;display:flex;flex-direction:column;gap:18px;align-items:center;text-align:center;margin:0 auto;max-width:880px;width:100%;background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);}
+.mode-tabs{display:flex;gap:8px;background:var(--surface2);padding:6px;border-radius:14px}
+.mode-tab{border:none;background:transparent;padding:9px 18px;border-radius:10px;color:var(--text2);font-weight:600;cursor:pointer;transition:var(--transition)}
+.mode-tab.active{background:var(--surface3);color:var(--text)}
+.circle-wrap{position:relative;width:320px;height:320px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 14px 28px var(--accent-glow));}
+.circle-wrap svg{transform:rotate(-90deg)}
+.timer-bg{fill:none;stroke:var(--surface3);stroke-width:20}
+.timer-progress{fill:none;stroke:url(#grad);stroke-width:20;stroke-linecap:round;transition:stroke-dashoffset .6s ease}
+.timer-center{position:absolute;text-align:center}
+.timer-value{font-size:54px;font-weight:700;letter-spacing:2px}
+.timer-state{font-size:13px;color:var(--text2);letter-spacing:3px;margin-top:6px;text-transform:uppercase}
+.controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+.btn{border:none;border-radius:999px;padding:13px 26px;font-weight:650;font-size:14px;cursor:pointer;transition:var(--transition);display:flex;align-items:center;gap:8px;background:var(--surface2);color:var(--text);}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0b0c14;box-shadow:0 10px 26px var(--accent-glow);}
+.btn-outline{border:1px solid var(--border);background:transparent;color:var(--text2)}
+.btn.small{padding:9px 16px;font-size:12px}
+.btn:hover{transform:translateY(-1px)}
+.dot-row{display:flex;gap:6px;margin-top:8px}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--surface3);border:1px solid var(--border);transition:var(--transition)}
+.dot.done{background:var(--accent);border-color:var(--accent)}
+.dot.current{border-color:var(--accent);box-shadow:0 0 10px var(--accent-glow)}
+.pill{padding:8px 14px;border-radius:14px;background:var(--surface2);border:1px solid var(--border);font-size:12px;color:var(--text2);display:inline-flex;align-items:center;gap:8px}
+.pill.success{background:rgba(52,211,153,.12);color:var(--green);border-color:rgba(52,211,153,.3)}
+.fullscreen-btn{position:absolute;top:12px;right:12px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);padding:6px 10px;font-size:11px;cursor:pointer}
+
+/* Support + Plant */
+.side-stack{display:flex;flex-direction:column;gap:14px;align-items:center;}
+.support-card{display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center;min-height:auto;width:200px;position:relative;justify-self:end;padding:14px;margin-left:0;}
+.support-card .pill{font-size:11px}
+.qr-box{width:120px;height:120px;border-radius:16px;border:1px solid var(--border);background:var(--surface3);display:grid;place-items:center;}
+.plant-wrap{width:240px;padding:0;background:transparent;border:none;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;}
+#focus-plant{width:260px;height:300px;margin-top:10px;}
+
+/* Info cards */
+.score-val{font-size:40px;font-weight:700}
+.bar{width:100%;height:10px;border-radius:12px;background:var(--surface3);overflow:hidden}
+.bar > div{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0%;transition:width .4s ease;box-shadow:0 8px 18px var(--accent-glow)}
+.objective-input textarea{width:100%;min-height:90px;border-radius:14px;border:1px solid var(--border);background:var(--surface2);color:var(--text);padding:14px;font-family:var(--font);resize:none}
+.memory-entry{display:flex;justify-content:space-between;align-items:center;background:var(--surface2);padding:12px 14px;border-radius:12px;font-size:13px;border:1px solid var(--border)}
+
+.checklist-item{display:flex;align-items:center;gap:10px;background:var(--surface2);padding:10px 12px;border-radius:12px;border:1px solid var(--border)}
+.checklist-item input{accent-color:var(--accent)}
+.task-input,.habit-input{display:flex;gap:8px}
+.task-input input,.habit-input input{flex:1;border-radius:12px;border:1px solid var(--border);background:var(--surface2);color:var(--text);padding:12px;font-family:var(--font)}
+.task-list,.habit-list{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.task-row{display:flex;align-items:center;gap:10px;background:var(--surface2);padding:10px 12px;border-radius:12px;border:1px solid var(--border)}
+.task-row.done{opacity:.55}
+.year-ring{display:flex;align-items:center;gap:14px}
+.ring{width:78px;height:78px}
+.ring circle{fill:none;stroke-width:7;transform:rotate(-90deg);transform-origin:50% 50%}
+.ring-bg{stroke:var(--surface3)}
+.ring-val{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset .8s ease}
+
+/* Memory */
+.memory-list{display:flex;flex-direction:column;gap:14px}
+.mem-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:8px}
+.mem-head{display:flex;justify-content:space-between;align-items:center}
+.mem-score{padding:6px 12px;border-radius:12px;background:var(--surface3);font-weight:650;font-size:12px}
+
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:16px}
+.stat-card{padding:18px}
+.stat-label{font-size:12px;color:var(--text2);letter-spacing:2px;text-transform:uppercase}
+.stat-value{font-size:32px;font-weight:700;margin:4px 0}
+.stat-desc{color:var(--green);font-size:12px}
+.chart{height:140px;display:flex;align-items:flex-end;gap:10px;margin-top:14px}
+.chart-bar{flex:1;background:var(--surface3);border-radius:10px 10px 6px 6px;position:relative;transition:var(--transition)}
+.chart-bar.today{background:linear-gradient(180deg,var(--accent2),var(--accent))}
+.chart-bar span{position:absolute;bottom:100%;left:50%;transform:translate(-50%,-6px);font-size:11px;color:var(--text2)}
+.chart-bar strong{position:absolute;bottom:50%;left:50%;transform:translate(-50%,50%);font-size:11px;color:#fff;font-weight:700}
+
+/* Habits */
+.habit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:12px}
+.habit-card{padding:16px}
+.habit-table{display:grid;grid-template-columns:120px repeat(31,1fr);gap:4px;align-items:center;margin-top:12px}
+.habit-label{font-weight:650;font-size:13px;color:var(--text);padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);}
+.day-grid{display:contents}
+.day{height:26px;border-radius:6px;background:var(--surface3);display:grid;place-items:center;font-size:11px;color:var(--text3);cursor:pointer;border:1px solid var(--border);transition:var(--transition)}
+.day.head{background:var(--surface2);color:var(--text);font-weight:700;cursor:default}
+.day.on{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0b0c14;border-color:transparent;box-shadow:0 8px 18px var(--accent-glow)}
+
+/* Templates */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.filter-btn{padding:8px 16px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-weight:600;font-size:12px}
+.filter-btn.active{background:var(--accent);border-color:var(--accent);color:#0b0c14;box-shadow:0 12px 24px var(--accent-glow)}
+.tmpl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.tmpl-card{cursor:pointer;transition:var(--transition)}
+.tmpl-card:hover{transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,.35);border-color:var(--accent)}
+
+/* Settings */
+.setting{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--border)}
+.setting:last-child{border:none}
+.control-pill{display:flex;align-items:center;gap:10px}
+.adjust-btn{width:32px;height:32px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:18px;cursor:pointer}
+.value{font-weight:700;font-size:16px;min-width:34px;text-align:center}
+.toggle{width:50px;height:26px;border-radius:13px;background:var(--surface3);position:relative;border:none;cursor:pointer;transition:var(--transition)}
+.toggle::after{content:"";position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;left:4px;transition:var(--transition)}
+.toggle.on{background:linear-gradient(135deg,var(--accent),var(--accent2))}
+.toggle.on::after{left:26px}
+.bg-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.bg-chip{padding:10px 14px;border-radius:12px;border:1px solid var(--border);cursor:pointer;background:var(--surface2);color:var(--text2);}
+.bg-chip.active{border-color:var(--accent);color:var(--text);box-shadow:0 10px 24px var(--accent-glow)}
+.palette-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.palette-chip{padding:12px 14px;border-radius:12px;border:1px solid var(--border);cursor:pointer;min-width:120px;display:flex;align-items:center;gap:10px;background:var(--surface2);color:var(--text2);}
+.swatch{width:34px;height:24px;border-radius:8px;background:var(--accent);box-shadow:0 0 0 1px rgba(255,255,255,.06) inset;}
+.palette-chip.active{border-color:var(--accent);color:var(--text);box-shadow:0 10px 24px var(--accent-glow)}
+
+/* Overlay & toast */
+.overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(4,4,10,.88);backdrop-filter:blur(20px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;z-index:60;padding:20px;text-align:center}
+.overlay.show{display:flex}
+.overlay-card{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:24px;max-width:360px;width:100%;display:flex;flex-direction:column;gap:12px;box-shadow:0 30px 90px rgba(0,0,0,.45)}
+.focus-score{font-size:54px;font-weight:700}
+.toast{position:fixed;bottom:90px;left:50%;transform:translate(-50%,80px);background:var(--surface);border:1px solid var(--border);padding:12px 20px;border-radius:14px;font-size:13px;opacity:0;transition:var(--transition);z-index:80}
+.toast.show{transform:translate(-50%,0);opacity:1}
+.confetti-piece{position:fixed;top:0;left:50%;width:10px;height:14px;opacity:.95;border-radius:3px;animation:confetti-fall 1.6s cubic-bezier(.23,1,.32,1) forwards;will-change:transform;}
+
+/* Fullscreen */
+body.fullscreen nav,body.fullscreen .info-grid,body.fullscreen .support-card{display:none !important}
+body.fullscreen main{padding-top:40px}
+body.fullscreen .hero-grid{grid-template-columns:1fr;}
+body.fullscreen .timer-card{max-width:640px;margin:0 auto}
+
+/* Responsive */
+@media(max-width:980px){
+  main{padding:18px 14px 120px;}
+  .hero-grid{grid-template-columns:1fr;justify-content:center;}
+  .side-stack{flex-direction:row;gap:10px;justify-content:space-between;width:100%;max-width:100%;flex-wrap:wrap;}
+  .support-card{width:48%;min-width:260px;}
+  .plant-wrap{width:48%;min-width:260px;}
+  #focus-plant{width:220px;height:260px;}
+  .circle-wrap{width:240px;height:240px;}
+  .timer-card{padding:22px 18px;max-width:640px;}
+}
+@media(max-width:650px){
+  nav{flex-direction:column;gap:10px}
+  .nav-tabs{width:100%;justify-content:flex-start;overflow-x:auto;padding:4px 2px;}
+  .nav-tab{padding:8px 12px;font-size:12px}
+  .nav-right{width:100%;justify-content:flex-start}
+  .hero-grid{gap:14px;}
+  .side-stack{flex-direction:column;align-items:center;}
+  .support-card,.plant-wrap{width:100%;max-width:360px;}
+  #focus-plant{width:200px;height:240px;}
+  .circle-wrap{width:210px;height:210px;}
+  .controls{flex-direction:column;gap:8px;}
+  .btn{width:100%;justify-content:center;padding:12px 18px;font-size:13px;}
+  .timer-card{padding:18px 16px;}
+  main{padding:14px 12px 120px;}
+}
+</style>
+</head>
+<body>
+<div class="splash" id="splash">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:14px">
+    <div class="splash-pulse"></div>
+    <div class="splash-logo">Focus<span>OS</span></div>
+  </div>
+</div>
+<div id="app">
+  <nav>
+    <div class="logo">Focus<span>OS</span></div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-page="focus">Focus</button>
+      <button class="nav-tab" data-page="memory">Memory</button>
+      <button class="nav-tab" data-page="stats">Stats</button>
+      <button class="nav-tab" data-page="habits">Habits</button>
+      <button class="nav-tab" data-page="templates">Templates</button>
+      <button class="nav-tab" data-page="themes">Themes</button>
+      <button class="nav-tab" data-page="settings">Settings</button>
+    </div>
+    <div class="nav-right">
+      <div class="nav-pill" id="todayPill">☾ Today 0m</div>
+      <div class="nav-pill" id="streakPill">🔥 1 Day Streak</div>
+      <div class="nav-pill" id="xpPill">Lv 1 · 0 XP</div>
+      <button class="nav-pill" id="lockPill" style="cursor:pointer;">🔒 Lock</button>
+    </div>
+  </nav>
+
+  <main>
+    <!-- Focus -->
+    <section class="page active" data-id="focus">
+      <div class="hero-grid">
+        <div class="card timer-card lift" id="timerCard">
+          <button class="fullscreen-btn" id="fullBtn">⤢ Fullscreen</button>
+          <div style="text-transform:uppercase;font-size:12px;letter-spacing:4px;color:var(--text2)">Deep Work Protocol</div>
+          <h2 style="margin-top:6px;font-size:28px" id="sessionLabel">Focus Session</h2>
+          <div class="mode-tabs">
+            <button class="mode-tab active" data-mode="focus">Focus</button>
+            <button class="mode-tab" data-mode="short">Short Break</button>
+            <button class="mode-tab" data-mode="long">Long Break</button>
+          </div>
+          <div class="circle-wrap">
+            <svg width="280" height="280">
+              <defs>
+                <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="var(--accent)"/>
+                  <stop offset="100%" stop-color="var(--accent2)"/>
+                </linearGradient>
+              </defs>
+              <circle class="timer-bg" cx="140" cy="140" r="110"></circle>
+              <circle class="timer-progress" id="timerPath" cx="140" cy="140" r="110" stroke-dasharray="691" stroke-dashoffset="0"></circle>
+            </svg>
+            <div class="timer-center">
+              <div class="timer-value" id="timerDisplay">25:00</div>
+              <div class="timer-state" id="timerState">READY</div>
+            </div>
+          </div>
+          <div class="controls">
+            <button class="btn btn-outline" id="resetBtn">↻ Reset</button>
+            <button class="btn btn-primary" id="startBtn">▶ Start</button>
+            <button class="btn btn-outline" id="skipBtn">⏭ Skip</button>
+          </div>
+          <div class="dot-row" id="sessionDots"></div>
+          <div class="pill" id="nextActionPill">Up next: Short Break</div>
+        </div>
+
+        <div class="side-stack">
+          <div class="card support-card lift" id="supportCard">
+            <div style="font-weight:700">Support the build</div>
+            <img src="./qr.jpg" alt="UPI QR" style="margin-top:10px;border-radius:12px;width:140px;height:140px;object-fit:contain;">
+            <div class="pill">UPI: 9667300766@fam</div>
+          </div>
+          <div class="plant-wrap lift">
+            <!-- Premium green plant -->
+            <svg id="focus-plant" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <style>
+                #focus-plant { overflow: visible; }
+                .glow { fill: url(#glowGrad); opacity: .12; animation: glowPulse 4s ease-in-out infinite; }
+                .stem { stroke: url(#stemGrad); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round;
+                        stroke-dasharray: 150; stroke-dashoffset: 150;
+                        animation: stemGrow 2s ease-out forwards, stemSway 6s ease-in-out infinite 2s;
+                        transform-origin: 100px 178px; }
+                .leaf { fill: url(#leafGrad); filter: drop-shadow(0 3px 8px rgba(0,0,0,.25));
+                        opacity: 0; transform-origin: center bottom;
+                        animation: leafGrow 1.6s ease-out forwards, leafSway 6s ease-in-out infinite 2s; }
+                .leaf.l2 { animation-delay: .22s, 2s; }
+                .leaf.l3 { animation-delay: .38s, 2s; }
+                .leaf.l4 { animation-delay: .55s, 2s; }
+                .leaf.l5 { animation-delay: .7s,  2s; }
+                .seed { fill: url(#seedGrad); transform-origin: 100px 190px;
+                        animation: seedCrack 1s ease-out forwards, seedDrop 1.8s ease-in forwards; }
+                .face { opacity: 0; animation: faceFade .9s ease-out forwards 1.2s; transform-origin: 100px 148px; }
+                .eye  { fill: #e7f5e7; transition: transform .4s ease, opacity .4s ease; }
+                .mouth{ fill: none; stroke: #e7f5e7; stroke-width: 3; stroke-linecap: round; transition: d .4s ease; }
+                .happy .mouth { d: path("M92 152 Q100 158 108 152"); }
+                .happy .eye   { transform: translateY(0); opacity: 1; }
+                .happy .leaf  { animation-name: leafGrow, leafSway; }
+                .happy .glow  { opacity:.14; animation: glowPulse 4s ease-in-out infinite; }
+                #focus-plant.sad .mouth { d: path("M92 152 Q100 147 108 152"); }
+                #focus-plant.sad .eye   { transform: translateY(2px); opacity: .7; }
+                #focus-plant.sad .leaf  { animation-name: leafGrow, leafDroop; }
+                #focus-plant.sad .glow  { opacity:.05; animation:none; }
+                @keyframes seedCrack { to { transform: scale(.6) translateY(7px); opacity: 0; } }
+                @keyframes seedDrop  { to { transform: translateY(5px); } }
+                @keyframes stemGrow  { to { stroke-dashoffset: 0; } }
+                @keyframes stemSway  { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(1.6deg); } }
+                @keyframes leafGrow  { from { opacity:0; transform: scale(.2) translateY(18px); }
+                                       to   { opacity:1; transform: scale(1)  translateY(0); } }
+                @keyframes leafSway  { 0%,100% { transform: translateY(0) rotate(0deg); }
+                                       50%    { transform: translateY(-2px) rotate(2.3deg); } }
+                @keyframes leafDroop { 0%,100% { transform: translateY(1px) rotate(4deg); }
+                                       50%    { transform: translateY(6px) rotate(8deg); } }
+                @keyframes glowPulse { 0%,100% { opacity:.10; } 50% { opacity:.20; } }
+                @keyframes faceFade  { to { opacity:1; } }
+              </style>
+              <defs>
+                <linearGradient id="seedGrad" x1="80" y1="180" x2="120" y2="205">
+                  <stop stop-color="#7ecf7a" offset="0"/><stop stop-color="#b2f2a5" offset="1"/>
+                </linearGradient>
+                <linearGradient id="stemGrad" x1="100" y1="80" x2="100" y2="190">
+                  <stop stop-color="#78d97a" offset="0"/><stop stop-color="#4fa86d" offset="1"/>
+                </linearGradient>
+                <linearGradient id="leafGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop stop-color="#8ee59a" offset="0"/><stop stop-color="#4cae6f" offset="1"/>
+                </linearGradient>
+                <radialGradient id="glowGrad" cx="50%" cy="60%" r="65%">
+                  <stop stop-color="#6fdc7a" stop-opacity=".28" offset="0"/>
+                  <stop stop-color="#000" stop-opacity="0" offset="1"/>
+                </radialGradient>
+              </defs>
+              <ellipse class="glow" cx="100" cy="186" rx="60" ry="28"/>
+              <ellipse class="seed" cx="100" cy="192" rx="14" ry="10"/>
+              <path class="stem" d="M100 190 C100 168 99 144 101 126 C103 112 104 94 100 86"/>
+              <path class="leaf l1" d="M100 128 C82 120 66 108 60 95 C76 98 92 108 100 128" />
+              <path class="leaf l2" d="M102 128 C120 120 136 108 142 95 C126 98 110 108 102 128" />
+              <path class="leaf l3" d="M94 112 C82 102 74 90 72 78 C86 84 98 94 94 112" />
+              <path class="leaf l4" d="M106 112 C118 102 126 90 128 78 C114 84 102 94 106 112" />
+              <path class="leaf l5" d="M100 105 C96 92 94 82 94 72 C104 80 110 92 100 105" />
+              <g class="face happy">
+                <circle class="eye" cx="92" cy="148" r="3.3"/>
+                <circle class="eye" cx="108" cy="148" r="3.3"/>
+                <path class="mouth" d="M92 152 Q100 158 108 152"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <div class="card lift">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <h4>Live Focus Score</h4>
+            <span class="pill success" id="scoreBadge">Good</span>
+          </div>
+          <div class="score-val" id="liveScore">82</div>
+          <div class="bar"><div id="scoreBar"></div></div>
+          <p style="font-size:13px;color:var(--text2)">Score blends duration, consistency, and streak energy.</p>
+        </div>
+
+        <div class="card lift objective-input">
+          <h4>Focus Objective</h4>
+          <textarea id="objectiveInput" placeholder="Describe the intention for this session..."></textarea>
+          <div style="display:flex;justify-content:flex-end"><button class="btn btn-primary small" id="saveObjective">Save Objective</button></div>
+        </div>
+
+        <div class="card lift memory-preview">
+          <h4>Memory Vault Snapshot</h4>
+          <div class="memory-entry"><span id="memoryPreview">No sessions logged yet.</span><span style="color:var(--text2);font-size:12px">🔒</span></div>
+          <p style="font-size:13px;color:var(--text2)">Completed sessions are remembered automatically so you can reflect later.</p>
+        </div>
+
+        <div class="card lift">
+          <h4>Year Progress</h4>
+          <div class="year-ring">
+            <svg class="ring" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" class="ring-bg"></circle><circle cx="50" cy="50" r="42" class="ring-val" id="yearRing" stroke-dasharray="264" stroke-dashoffset="264"></circle></svg>
+            <div><div style="font-size:28px;font-weight:700" id="yearPct">0%</div><div style="color:var(--text2);font-size:13px" id="yearText">Day 0 of 365</div></div>
+          </div>
+        </div>
+
+        <div class="card lift">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <h4>Flow Checklist</h4>
+            <button class="btn btn-outline small" id="resetRituals">Reset</button>
+          </div>
+          <div class="task-list" id="ritualList"></div>
+        </div>
+
+        <div class="card lift">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <h4>Desk Tasks</h4>
+            <button class="btn btn-outline small" id="clearTasks">Clear done</button>
+          </div>
+          <div class="task-input"><input id="taskInput" placeholder="Add quick task"><button class="btn btn-primary small" id="taskAdd">Add</button></div>
+          <div class="task-list" id="taskList"></div>
+        </div>
+
+        <div class="card lift">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <h4>Quick Templates</h4>
+            <span class="pill">Tap to load</span>
+          </div>
+          <div class="task-list" id="quickTemplateRow"></div>
+          <button class="btn btn-outline small" id="openTemplates" style="margin-top:6px">Browse library</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Memory -->
+    <section class="page" data-id="memory">
+      <h2 style="font-size:26px;margin-bottom:8px">Memory Vault</h2>
+      <p style="color:var(--text2);margin-bottom:16px">Every completed session is saved with its score, duration, and reflection.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+        <button class="btn btn-outline small" id="exportMemories">Export JSON</button>
+        <button class="btn btn-outline small" id="clearMemories">Clear Vault</button>
+      </div>
+      <div class="memory-list" id="memoryList"></div>
+      <div class="card lift" style="margin-top:18px">
+        <h3 style="margin-bottom:8px">Add a memory manually</h3>
+        <input id="memTitle" placeholder="Session title e.g. Thesis Sprint" style="padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--surface2);color:var(--text);margin-bottom:10px">
+        <textarea id="memNote" placeholder="Reflection, mood, wins..." style="padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--surface2);color:var(--text);min-height:90px"></textarea>
+        <div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="btn btn-primary" id="addMemory">Save Memory</button></div>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="page" data-id="stats">
+      <h2 style="font-size:26px;margin-bottom:6px">Stats & Flow</h2>
+      <p style="color:var(--text2);margin-bottom:16px">Track total focus time, streak integrity, and weekly consistency.</p>
+      <div class="stats-grid">
+        <div class="card stat-card lift"><div class="stat-label">Today</div><div class="stat-value" id="statToday">0m</div><div class="stat-desc">Push to daily target</div></div>
+        <div class="card stat-card lift"><div class="stat-label">Total Focus</div><div class="stat-value" id="statTime">0m</div><div class="stat-desc">Stack hours</div></div>
+        <div class="card stat-card lift"><div class="stat-label">Sessions</div><div class="stat-value" id="statSessions">0</div><div class="stat-desc">Momentum</div></div>
+        <div class="card stat-card lift"><div class="stat-label">Streak</div><div class="stat-value" id="statStreak">1 Day</div><div class="stat-desc">Guard the chain</div></div>
+      </div>
+
+      <div class="card lift" style="margin-top:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h4>Weekly Flow</h4>
+          <span style="color:var(--text2);font-size:12px">Minutes per day</span>
+        </div>
+        <div class="chart" id="weekChart"></div>
+      </div>
+
+      <div class="stats-grid" style="margin-top:16px">
+        <div class="card ring-card lift" style="display:flex;align-items:center;gap:14px">
+          <svg class="ring" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" class="ring-bg"></circle><circle cx="50" cy="50" r="42" class="ring-val" id="ringEff" stroke-dasharray="264" stroke-dashoffset="264"></circle></svg>
+          <div><h4>Efficiency</h4><p style="color:var(--text2);font-size:13px">Session completion rate</p><strong id="effVal">0%</strong></div>
+        </div>
+        <div class="card ring-card lift" style="display:flex;align-items:center;gap:14px">
+          <svg class="ring" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" class="ring-bg"></circle><circle cx="50" cy="50" r="42" class="ring-val" id="ringAdh" stroke-dasharray="264" stroke-dashoffset="264"></circle></svg>
+          <div><h4>Template Adherence</h4><p style="color:var(--text2);font-size:13px">How well you followed plans</p><strong id="adhVal">0%</strong></div>
+        </div>
+      </div>
+
+      <div class="card lift" style="margin-top:16px">
+        <h4>Shortcuts</h4>
+        <div class="task-list shortcut-grid" style="margin-top:10px">
+          <div class="shortcut"><code>Space</code> Start / Pause</div>
+          <div class="shortcut"><code>R</code> Reset</div>
+          <div class="shortcut"><code>S</code> Skip</div>
+          <div class="shortcut"><code>1/2/3</code> Switch modes</div>
+          <div class="shortcut"><code>F</code> Fullscreen</div>
+          <div class="shortcut"><code>N</code> Focus objective</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Habits -->
+    <section class="page" data-id="habits">
+      <h2 style="font-size:26px;margin-bottom:6px">Habit Lab</h2>
+      <p style="color:var(--text2);margin-bottom:12px">30-day check grid per habit. Chains reset with each month.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+        <div class="pill success" id="habitStreakPill">🔥 0 day chain</div>
+        <div class="habit-input"><input id="habitInput" placeholder="Add habit e.g. Journaling"><button class="btn btn-primary small" id="addHabit">Add</button></div>
+      </div>
+      <div class="card lift" style="overflow:hidden">
+        <div class="habit-table" id="habitHeaderRow"></div>
+        <div class="habit-grid" id="habitList"></div>
+      </div>
+    </section>
+
+    <!-- Templates -->
+    <section class="page" data-id="templates">
+      <h2 style="font-size:26px;margin-bottom:6px">Template Library</h2>
+      <p style="color:var(--text2)">Pick a flow protocol to instantly load durations and cadence.</p>
+      <div class="filter-bar" id="filterBar"></div>
+      <div class="tmpl-grid" id="tmplGrid"></div>
+    </section>
+
+    <!-- Themes -->
+    <section class="page" data-id="themes">
+      <h2 style="font-size:26px;margin-bottom:6px">Theme Store (beta)</h2>
+      <p style="color:var(--text2)">Preview upcoming themes. Unlock by purchase or a short ad (placeholder).</p>
+      <div class="tmpl-grid" id="themeStore"></div>
+    </section>
+
+    <!-- Settings -->
+    <section class="page" data-id="settings">
+      <h2 style="font-size:26px;margin-bottom:6px">Settings</h2>
+      <p style="color:var(--text2)">Dial in your protocol and vibe.</p>
+
+      <div style="margin-top:20px">
+        <h3 style="font-size:18px;margin-bottom:10px">Timer</h3>
+        <div class="setting"><div><h4>Focus Duration</h4><p style="color:var(--text2);font-size:12px">Minutes per deep block</p></div><div class="control-pill"><button class="adjust-btn" data-target="focus" data-d="-5">−</button><span class="value" id="valFocus">25</span><button class="adjust-btn" data-target="focus" data-d="5">+</button></div></div>
+        <div class="setting"><div><h4>Short Break</h4><p style="color:var(--text2);font-size:12px">Reset without losing flow</p></div><div class="control-pill"><button class="adjust-btn" data-target="short" data-d="-1">−</button><span class="value" id="valShort">5</span><button class="adjust-btn" data-target="short" data-d="1">+</button></div></div>
+        <div class="setting"><div><h4>Long Break</h4><p style="color:var(--text2);font-size:12px">Recharge after full cycle</p></div><div class="control-pill"><button class="adjust-btn" data-target="long" data-d="-5">−</button><span class="value" id="valLong">15</span><button class="adjust-btn" data-target="long" data-d="5">+</button></div></div>
+        <div class="setting"><div><h4>Sessions per Cycle</h4><p style="color:var(--text2);font-size:12px">Deep blocks before long break</p></div><div class="control-pill"><button class="adjust-btn" data-target="cycle" data-d="-1">−</button><span class="value" id="valCycle">4</span><button class="adjust-btn" data-target="cycle" data-d="1">+</button></div></div>
+        <div class="setting"><div><h4>Daily Target (min)</h4><p style="color:var(--text2);font-size:12px">Goal for today</p></div><div class="control-pill"><button class="adjust-btn" data-target="dailyTarget" data-d="-10">−</button><span class="value" id="valDaily">60</span><button class="adjust-btn" data-target="dailyTarget" data-d="10">+</button></div></div>
+      </div>
+
+      <div style="margin-top:20px">
+        <h3 style="font-size:18px;margin-bottom:10px">Automation</h3>
+        <div class="setting"><div><h4>Auto-start Breaks</h4><p style="color:var(--text2);font-size:12px">Jump straight into rest</p></div><button class="toggle" id="togBreaks"></button></div>
+        <div class="setting"><div><h4>Auto-start Focus</h4><p style="color:var(--text2);font-size:12px">Begin next block automatically</p></div><button class="toggle" id="togFocus"></button></div>
+        <div class="setting"><div><h4>Auto-resume on refresh</h4><p style="color:var(--text2);font-size:12px">Resume timer when returning</p></div><button class="toggle" id="togResume"></button></div>
+        <div class="setting"><div><h4>Session Sounds</h4><p style="color:var(--text2);font-size:12px">Soft cues for transitions</p></div><button class="toggle on" id="togSound"></button></div>
+        <div class="setting"><div><h4>Desktop Notifications</h4><p style="color:var(--text2);font-size:12px">Finish alerts</p></div><button class="btn btn-outline small" id="askNotify">Enable</button></div>
+      </div>
+
+      <div style="margin-top:20px">
+        <h3 style="font-size:18px;margin-bottom:10px">Background</h3>
+        <div class="bg-row" id="bgRow"></div>
+        <div style="margin-top:10px"><input type="file" id="bgUpload" accept="image/*"></div>
+      </div>
+
+      <div style="margin-top:20px">
+        <h3 style="font-size:18px;margin-bottom:10px">Accent Palette</h3>
+        <div class="palette-row" id="paletteRow"></div>
+      </div>
+
+      <div style="margin-top:20px">
+        <h3 style="font-size:18px;margin-bottom:10px">Danger</h3>
+        <button class="btn btn-outline" id="resetAll">Reset everything</button>
+      </div>
+    </section>
+  </main>
+
+  <div class="overlay" id="overlay">
+    <div class="overlay-card">
+      <div style="text-transform:uppercase;letter-spacing:4px;font-size:11px;color:var(--text3)">Session Complete</div>
+      <div class="focus-score" id="overlayScore">90</div>
+      <div class="overlay-note" id="overlayMsg" style="font-size:14px;color:var(--text2)">Deep work session logged.</div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:6px">
+        <span id="overlayTime">25 min focused</span>
+        <span id="overlayXp">+120 XP</span>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:10px">
+        <button class="btn btn-primary" id="overlayContinue">Continue Flow</button>
+        <button class="btn btn-outline" id="overlayClose">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script type="module" defer>
+// Fallback stubs (prevents crash if gamification.js is missing)
+function onSessionComplete(){ return {}; }
+function onTaskComplete(){ return {}; }
+function onStreakBroken(){ return {}; }
+function checkNearMiss(){ return null; }
+function levelFromXP(xp){ return Math.floor((xp||0)/100)+1; }
+
+const STORAGE_KEY='focusos:v3';
+const circumference=2*Math.PI*110;
+let GM_STATE={ xp:0, streak:1 };
+const STATS={sessions:0,tasksCompleted:0,totalMinutes:0};
+const plantEl=()=>document.getElementById('focus-plant');
+function setPlantMood(isSad){const p=plantEl();if(!p)return;p.classList.toggle('sad',isSad);}
+
+const DEFAULT_STATE={
+  focus:25,short:5,long:15,cycle:4,dailyTarget:60,
+  mode:'focus',seconds:1500,total:1500,running:false,interval:null,
+  sessionsDone:0,skippedSessions:0,currentSession:1,totalFocusSeconds:0,
+  xp:0,streak:1,lastSessionDate:null,lockMode:false,
+  week:[30,42,60,50,25,0,0],weekAnchor:'',todayMinutes:0,todayKey:'',
+  sound:true,autoBreak:false,autoFocus:false,autoResume:false,theme:'midnight',
+  bgMode:'aurora',bgCustom:'',palette:'cool',
+  tasks:[],
+  rituals:[{label:'Hydrated',done:false},{label:'Notifications off',done:false},{label:'Goal written',done:false}],
+  habits:[{name:'Journal',days:new Array(31).fill(false),monthKey:'',streak:0,lastDone:null}],
+  memory:[],objective:''
+};
+
+let STATE={...DEFAULT_STATE};
+const MESSAGES=["Showing up is the win.","Showing up is the most important.","Tiny steps, big momentum.","You kept the promise to yourself.","Consistency compounds.","Another brick laid. Keep going.","You’re training your focus muscle.","Stacked another rep of discipline.","Proof you can trust yourself."];
+let CURRENT_PAGE='focus';
+let clickAudioCtx=null;
+
+const categories=['All','Daily','Deep Work','Study','Creative'];
+const palettes=[
+  {id:'cool',name:'Aurora Cyan',accent:'#7dd6ff',accent2:'#c6a4ff',glow:'rgba(124,92,252,.35)'},
+  {id:'sunset',name:'Sunset Peach',accent:'#ff9f7f',accent2:'#ff6b9d',glow:'rgba(255,107,157,.35)'},
+  {id:'grove',name:'Neon Grove',accent:'#34d399',accent2:'#22c55e',glow:'rgba(34,197,94,.35)'},
+  {id:'royal',name:'Royal Pulse',accent:'#a855f7',accent2:'#6366f1',glow:'rgba(99,102,241,.35)'}
+];
+
+function applyEffects(res){
+  if(!res)return;
+  if(res.state){GM_STATE=res.state;STATE.streak=GM_STATE.streak;}
+  if(res.toasts){res.toasts.filter(Boolean).forEach(showToast);}
+  if(res.confetti)launchConfetti();
+  if(res.levelProgress!==undefined)renderLevel();
+  renderStats();
+}
+
+function getDateKey(d){return d.toISOString().slice(0,10);} 
+function getWeekAnchor(date){const day=date.getDay();const diff=(day+6)%7;const monday=new Date(date);monday.setDate(date.getDate()-diff);return getDateKey(monday);} 
+function getMinutes(mode){return mode==='focus'?STATE.focus:mode==='short'?STATE.short:STATE.long;}
+
+function loadState(){try{const raw=localStorage.getItem(STORAGE_KEY);if(!raw)return;const parsed=JSON.parse(raw);Object.assign(STATE,DEFAULT_STATE,parsed);STATE.week=Array.isArray(parsed?.week)&&parsed.week.length===7?parsed.week:[...DEFAULT_STATE.week];STATE.rituals=parsed?.rituals||DEFAULT_STATE.rituals.map(r=>({...r}));STATE.tasks=parsed?.tasks||[];STATE.habits=(parsed?.habits||DEFAULT_STATE.habits).map(h=>({name:h.name,days:Array.isArray(h.days)&&h.days.length===31?h.days:new Array(31).fill(false),monthKey:h.monthKey||'',streak:h.streak||0,lastDone:h.lastDone||null}));STATE.memory=(parsed?.memory||[]).map(m=>({...m,timestamp:new Date(m.timestamp)}));STATE.objective=parsed?.objective||'';}catch(e){console.warn('State load failed',e);}finally{STATE.running=false;STATE.interval=null;} return STATE;}
+
+function persist(){const copy={...STATE};copy.running=false;copy.interval=null;copy.memory=STATE.memory.map(m=>({...m,timestamp:m.timestamp instanceof Date?m.timestamp.toISOString():m.timestamp}));localStorage.setItem(STORAGE_KEY,JSON.stringify(copy));}
+
+function ensureAnchors(){const today=new Date();const todayKey=getDateKey(today);let changed=false;if(STATE.todayKey!==todayKey){STATE.todayKey=todayKey;STATE.todayMinutes=0;STATE.habits=STATE.habits.map(h=>{const monthKey=`${today.getFullYear()}-${today.getMonth()+1}`;let days=h.days;let streak=h.streak||0;if(h.monthKey!==monthKey){days=new Array(31).fill(false);streak=0;}const diff=h.lastDone?Math.floor((today-new Date(h.lastDone))/(1000*60*60*24)):999;const carry=diff===1?streak:0;return {...h,days,streak:carry,lastDone:null,monthKey};});changed=true;}
+  const anchor=getWeekAnchor(today);if(STATE.weekAnchor!==anchor){STATE.weekAnchor=anchor;STATE.week=[0,0,0,0,0,0,0];changed=true;}
+  if(changed)persist();
+}
+
+function applyBackground(){const body=document.body;if(STATE.bgMode==='aurora'){body.style.background="radial-gradient(circle at 20% 20%, rgba(125,214,255,.12), transparent 26%), radial-gradient(circle at 80% 12%, rgba(198,164,255,.14), transparent 28%), radial-gradient(circle at 40% 80%, rgba(248,113,113,.12), transparent 32%), #05060c";}
+  else if(STATE.bgMode==='fabric'){body.style.background="repeating-radial-gradient(circle at 20% 20%, rgba(255,255,255,.02), rgba(255,255,255,.02) 8px, transparent 10px), #05060c";}
+  else if(STATE.bgMode==='grid'){body.style.background="linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px), #05060c";body.style.backgroundSize="40px 40px";}
+  else if(STATE.bgMode==='custom' && STATE.bgCustom){body.style.background=`center/cover no-repeat url(${STATE.bgCustom})`;}
+}
+
+function applyPalette(){const pal=palettes.find(p=>p.id===STATE.palette)||palettes[0];const root=document.documentElement;root.style.setProperty('--accent',pal.accent);root.style.setProperty('--accent2',pal.accent2);root.style.setProperty('--accent-glow',pal.glow);}
+
+function updateCircle(){const pct=STATE.seconds/STATE.total;document.getElementById('timerPath').style.strokeDashoffset=circumference*(1-pct);}
+function formatTime(sec){const m=Math.floor(sec/60).toString().padStart(2,'0');const s=(sec%60).toString().padStart(2,'0');return `${m}:${s}`}
+function renderLevel(){const pill=document.getElementById('xpPill');if(!pill)return;const lvl=levelFromXP(GM_STATE.xp);pill.textContent=`Lv ${lvl} · ${GM_STATE.xp} XP`;}
+
+function renderTimer(){document.getElementById('timerDisplay').textContent=formatTime(STATE.seconds);document.getElementById('timerState').textContent=STATE.running?'IN PROGRESS':STATE.seconds===STATE.total?'READY':'PAUSED';document.getElementById('sessionLabel').textContent=STATE.mode==='focus'?'Focus Session':STATE.mode==='short'?'Short Break':'Long Break';const elapsedMin=Math.max(1,(STATE.total-STATE.seconds)/60);const scoreNow=Math.round(calcScore(elapsedMin));document.getElementById('liveScore').textContent=scoreNow;document.getElementById('scoreBar').style.width=Math.min(100,scoreNow)+'%';document.getElementById('startBtn').textContent=STATE.running?'⏸ Pause':(STATE.seconds===STATE.total?'▶ Start':'▶ Resume');const next=STATE.mode==='focus'?'Short Break':'Focus';document.getElementById('nextActionPill').textContent=`Up next: ${next}`;updateCircle();renderLevel();}
+
+function setMode(mode){STATE.mode=mode;STATE.running=false;clearInterval(STATE.interval);const minutes=getMinutes(mode);STATE.seconds=minutes*60;STATE.total=STATE.seconds;document.querySelectorAll('.mode-tab').forEach(btn=>btn.classList.toggle('active',btn.dataset.mode===mode));renderTimer();updateDots();persist();}
+
+function startTimer(){if(STATE.running){pauseTimer();return;}setPlantMood(false);STATE.running=true;STATE.interval=setInterval(()=>{if(STATE.seconds<=0){clearInterval(STATE.interval);STATE.running=false;completeSession();return;}STATE.seconds--;renderTimer();},1000);renderTimer();}
+function pauseTimer(){STATE.running=false;clearInterval(STATE.interval);renderTimer();}
+function resetTimer(){STATE.running=false;clearInterval(STATE.interval);STATE.seconds=STATE.total;renderTimer();}
+function skipSession(){STATE.running=false;clearInterval(STATE.interval);STATE.seconds=0;renderTimer();setPlantMood(true);completeSession(true);}
+
+function calcScore(min){const totalAttempts=STATE.sessionsDone+STATE.skippedSessions||1;const eff=(STATE.sessionsDone/totalAttempts)*100;const minutes=min;const streakBoost=STATE.streak*1.2;const adh=Math.min(100,STATE.dailyTarget>0?(STATE.todayMinutes/STATE.dailyTarget)*100:0);const raw=50+minutes*1.1+eff*0.25+streakBoost+adh*0.15;return Math.max(50,Math.min(99,Math.round(raw)));}
+
+function updateDots(){const wrap=document.getElementById('sessionDots');wrap.innerHTML='';for(let i=1;i<=STATE.cycle;i++){const d=document.createElement('div');d.className='dot';if(i<STATE.currentSession)d.classList.add('done');if(i===STATE.currentSession)d.classList.add('current');wrap.appendChild(d);} }
+
+function updateStreak(){const todayKey=getDateKey(new Date());if(!STATE.lastSessionDate){STATE.streak=1;}else{const diffDays=Math.floor((new Date(todayKey)-new Date(STATE.lastSessionDate))/(1000*60*60*24));if(diffDays===1)STATE.streak+=1;else if(diffDays>1){STATE.streak=1;showToast('Streak lost. Fresh start.');setPlantMood(true);}}STATE.lastSessionDate=todayKey;}
+
+function completeSession(skipped=false){ensureAnchors();if(STATE.mode==='focus'){const elapsedSec=Math.max(0,STATE.total-STATE.seconds);const elapsedMin=Math.max(1,Math.round(elapsedSec/60));if(!skipped){STATE.sessionsDone++;STATS.sessions=STATE.sessionsDone;STATE.totalFocusSeconds+=elapsedSec;STATE.todayMinutes+=elapsedMin;STATS.totalMinutes=Math.floor(STATE.totalFocusSeconds/60);
+    const score=Math.round(calcScore(elapsedMin));
+    const result=onSessionComplete({minutes:elapsedMin,performanceScore:score,skipped:false},STATS);
+    setPlantMood(false);
+    applyEffects(result);
+    const dayIndex=(new Date().getDay()+6)%7;STATE.week[dayIndex]+=elapsedMin;
+    const memoryNote=STATE.objective||'No objective logged.';STATE.memory.unshift({title:STATE.objective||'Untitled Focus',score,duration:elapsedMin,timestamp:new Date(),note:memoryNote});
+    renderMemory();showOverlay(score,result?.state?result.state.xp:0,elapsedMin);notifyUser(score,result?.state?result.state.xp:0);playTone(880,220);}
+  else{STATE.skippedSessions++;const result=onSessionComplete({minutes:0,performanceScore:50,skipped:true},STATS);setPlantMood(true);applyEffects(result);}
+  STATE.currentSession++;
+  if(STATE.currentSession>STATE.cycle){STATE.currentSession=1;setMode('long');if(STATE.autoBreak){startTimer();}else renderTimer();}
+  else{if(STATE.mode==='focus'){setMode('short');if(STATE.autoBreak)startTimer();}else{setMode('focus');if(STATE.autoFocus)startTimer();}}
+  updateStats();persist();checkNearMissEffect();}}
+
+function renderRituals(){const list=document.getElementById('ritualList');list.innerHTML='';STATE.rituals.forEach((r,idx)=>{const item=document.createElement('label');item.className='checklist-item';item.innerHTML=`<input type="checkbox" ${r.done?'checked':''} data-ritual="${idx}"><span>${r.label}</span>`;item.querySelector('input').onchange=e=>{STATE.rituals[idx].done=e.target.checked;persist();};list.appendChild(item);});}
+
+function renderTasks(){const list=document.getElementById('taskList');list.innerHTML='';if(!STATE.tasks.length){list.innerHTML='<div style="color:var(--text3);font-size:13px">No tasks yet.</div>';return;}STATE.tasks.forEach((t,idx)=>{const row=document.createElement('div');row.className='task-row'+(t.done?' done':'');row.innerHTML=`<input type="checkbox" ${t.done?'checked':''} data-task="${idx}" style="accent-color:var(--accent)"><div style="flex:1">${t.text}</div><button class="btn btn-outline small" data-remove="${idx}">✕</button>`;row.querySelector('input').onchange=e=>{const was=STATE.tasks[idx].done;STATE.tasks[idx].done=e.target.checked;if(!was&&e.target.checked){STATS.tasksCompleted+=1;applyEffects(onTaskComplete(STATS));}renderTasks();persist();};row.querySelector('button').onclick=()=>{STATE.tasks.splice(idx,1);renderTasks();persist();};list.appendChild(row);});}
+
+function addTask(){const val=document.getElementById('taskInput').value.trim();if(!val)return;STATE.tasks.push({text:val,done:false});document.getElementById('taskInput').value='';renderTasks();persist();}
+function clearCompletedTasks(){STATE.tasks=STATE.tasks.filter(t=>!t.done);renderTasks();persist();showToast('Cleared finished tasks');}
+
+function checkNearMissEffect(){const res=checkNearMiss();if(res)applyEffects(res);}
+
+function renderHabitHeader(){const head=document.getElementById('habitHeaderRow');if(!head)return;head.innerHTML='';const label=document.createElement('div');label.className='habit-label';label.textContent='Habit / Day';head.appendChild(label);for(let i=1;i<=31;i++){const cell=document.createElement('div');cell.className='day head';cell.textContent=i;head.appendChild(cell);} }
+
+function renderHabits(){renderHabitHeader();const wrap=document.getElementById('habitList');wrap.innerHTML='';if(!STATE.habits.length){wrap.innerHTML='<div class="card habit-card" style="text-align:center;color:var(--text3)">Add a habit to begin.</div>';updateHabitPill();return;}STATE.habits.forEach((h,idx)=>{const row=document.createElement('div');row.className='habit-table';const label=document.createElement('div');label.className='habit-label';label.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><span>${h.name}</span><span style="color:var(--text2);font-size:11px">${h.streak||0} day streak</span></div>`;row.appendChild(label);const monthKey=h.monthKey||`${new Date().getFullYear()}-${new Date().getMonth()+1}`;h.monthKey=monthKey;for(let i=0;i<31;i++){if(typeof h.days[i]==='undefined')h.days[i]=false;const cell=document.createElement('div');cell.className='day'+(h.days[i]?' on':'');cell.textContent=i+1;cell.title=`Day ${i+1}`;cell.onclick=()=>toggleHabitDay(idx,i);row.appendChild(cell);}const wrapRow=document.createElement('div');wrapRow.appendChild(row);const delBtn=document.createElement('button');delBtn.className='btn btn-outline small';delBtn.textContent='Remove';delBtn.style.marginTop='8px';delBtn.onclick=()=>{STATE.habits.splice(idx,1);renderHabits();persist();};wrapRow.appendChild(delBtn);wrap.appendChild(wrapRow);});updateHabitPill();}
+function toggleHabitDay(idx,day){const h=STATE.habits[idx];const was=h.days[day];h.days[day]=!h.days[day];const today=new Date();const todayKey=getDateKey(today);if(h.days[day]){h.lastDone=todayKey;h.streak=calcHabitStreak(h.days);if(!was){applyEffects(onTaskComplete(STATS));showToast(MESSAGES[Math.floor(Math.random()*MESSAGES.length)]);}}else{h.streak=calcHabitStreak(h.days);}renderHabits();persist();}
+
+function calcHabitStreak(days){let streak=0;for(let i=days.length-1;i>=0;i--){if(days[i])streak++;else break;}return streak;}
+
+function updateHabitPill(){const longest=Math.max(0,...STATE.habits.map(h=>h.streak||0));const pill=document.getElementById('habitStreakPill');pill.textContent=`🔥 ${longest} day chain`;}
+
+function addHabit(){const val=document.getElementById('habitInput').value.trim();if(!val)return;STATE.habits.push({name:val,days:new Array(31).fill(false),monthKey:`${new Date().getFullYear()}-${new Date().getMonth()+1}`,streak:0,lastDone:null});document.getElementById('habitInput').value='';renderHabits();persist();}
+
+function renderMemory(){const list=document.getElementById('memoryList');list.innerHTML='';if(!STATE.memory.length){list.innerHTML='<div class="mem-card">No memories yet. Complete a session.</div>';document.getElementById('memoryPreview').textContent='Awaiting first memory.';return;}STATE.memory.forEach(mem=>{const card=document.createElement('div');card.className='mem-card';const time=new Date(mem.timestamp);card.innerHTML=`<div class="mem-head"><h3>${mem.title}</h3><span class="mem-score">${mem.score} ⚡</span></div><div class="mem-meta" style="color:var(--text2);font-size:12px">${mem.duration} min · ${time.toLocaleString()}</div><div class="mem-note" style="font-size:14px;color:var(--text);">${mem.note}</div>`;list.appendChild(card);});const latest=STATE.memory[0];document.getElementById('memoryPreview').textContent=`${latest.title} · ${latest.score}`;}
+
+
+const templates=[
+  {name:'Pomodoro Classic',desc:'25/5 cadence for balanced focus.',emoji:'🍅',focus:25,short:5,long:15,cycle:4,tag:'Daily'},
+  {name:'Deep Research',desc:'50 minute immersion blocks.',emoji:'🔬',focus:50,short:10,long:25,cycle:3,tag:'Deep Work'},
+  {name:'Exam Sprint',desc:'35 minute focus waves with quick resets.',emoji:'🎓',focus:35,short:7,long:20,cycle:5,tag:'Study'},
+  {name:'Creative Studio',desc:'30 minute ideation with mindful breaks.',emoji:'🎨',focus:30,short:8,long:18,cycle:4,tag:'Creative'},
+  {name:'Flow Marathon',desc:'90 min macro blocks for master projects.',emoji:'🏁',focus:90,short:15,long:40,cycle:2,tag:'Deep Work'},
+  {name:'Micro Bursts',desc:'10 minute quick hits to get unstuck.',emoji:'⚡',focus:10,short:3,long:12,cycle:6,tag:'Daily'}
+];
+
+function renderQuickTemplates(){const row=document.getElementById('quickTemplateRow');row.innerHTML='';templates.slice(0,4).forEach(t=>{const btn=document.createElement('button');btn.className='btn btn-outline small';btn.textContent=`${t.emoji} ${t.name}`;btn.onclick=()=>{STATE.focus=t.focus;STATE.short=t.short;STATE.long=t.long;STATE.cycle=t.cycle||4;syncSettings();setMode('focus');showToast(`Loaded ${t.name}`);persist();};row.appendChild(btn);});}
+
+function renderYearProgress(){const now=new Date();const start=new Date(now.getFullYear(),0,0);const diff=now-start;const day=Math.floor(diff/(1000*60*60*24));const total=(new Date(now.getFullYear(),11,31)-new Date(now.getFullYear(),0,0))/(1000*60*60*24);const pct=Math.min(100,Math.round((day/total)*100));document.getElementById('yearPct').textContent=`${pct}%`;document.getElementById('yearText').textContent=`Day ${day} of ${Math.round(total)}`;document.getElementById('yearRing').style.strokeDashoffset=264*(1-pct/100);}
+
+function renderStats(){document.getElementById('statSessions').textContent=STATE.sessionsDone;document.getElementById('statTime').textContent=STATE.totalFocusSeconds>=3600?(STATE.totalFocusSeconds/3600).toFixed(1)+'h':Math.floor(STATE.totalFocusSeconds/60)+'m';document.getElementById('statStreak').textContent=`${STATE.streak} Day`;document.getElementById('statToday').textContent=`${STATE.todayMinutes}m`;document.getElementById('streakPill').textContent=`🔥 ${STATE.streak} Day Streak`;document.getElementById('todayPill').textContent=`☾ Today ${STATE.todayMinutes}m`;
+  const totalAttempts=STATE.sessionsDone+STATE.skippedSessions;const eff=totalAttempts>0?Math.round((STATE.sessionsDone/totalAttempts)*100):0;const adh=Math.min(100,STATE.dailyTarget>0?Math.round((STATE.todayMinutes/STATE.dailyTarget)*100):0);
+  document.getElementById('effVal').textContent=eff.toFixed(0)+'%';document.getElementById('adhVal').textContent=adh.toFixed(0)+'%';
+  document.getElementById('ringEff').style.strokeDashoffset=264*(1-eff/100);
+  document.getElementById('ringAdh').style.strokeDashoffset=264*(1-adh/100);
+  renderChart();renderToday();renderYearProgress();renderLevel();}
+
+function renderChart(){const wrap=document.getElementById('weekChart');wrap.innerHTML='';const labels=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];const max=Math.max(60,...STATE.week,1);STATE.week.forEach((min,i)=>{const bar=document.createElement('div');bar.className='chart-bar';if(i===((new Date().getDay()+6)%7))bar.classList.add('today');bar.style.height=`${(min/max)*100||4}%`;bar.innerHTML=`<span>${labels[i]}</span><strong>${min}</strong>`;wrap.appendChild(bar);});}
+
+function renderToday(){const pct=Math.min(100,Math.round((STATE.todayMinutes/STATE.dailyTarget)*100));const badge=document.getElementById('scoreBadge');badge.textContent=pct>=100?'Daily goal hit':pct>=60?'On track':'Warm up';}
+
+function renderTemplates(filter='All'){const grid=document.getElementById('tmplGrid');grid.innerHTML='';templates.filter(t=>filter==='All'||t.tag===filter).forEach(t=>{const card=document.createElement('div');card.className='card tmpl-card lift';card.innerHTML=`<div style="font-size:30px">${t.emoji}</div><h3>${t.name}</h3><p style="color:var(--text2);font-size:13px">${t.desc}</p><div class="pill" style="width:max-content">${t.focus}/${t.short}/${t.long}</div><button class="btn btn-primary small" style="margin-top:8px">Apply</button>`;card.querySelector('button').onclick=()=>{STATE.focus=t.focus;STATE.short=t.short;STATE.long=t.long;STATE.cycle=t.cycle||4;syncSettings();setMode('focus');showToast(`Loaded ${t.name}`);persist();};grid.appendChild(card);});}
+
+function renderFilters(){const bar=document.getElementById('filterBar');bar.innerHTML='';categories.forEach(cat=>{const btn=document.createElement('button');btn.className='filter-btn'+(cat==='All'?' active':'');btn.textContent=cat;btn.onclick=()=>{bar.querySelectorAll('button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderTemplates(cat)};bar.appendChild(btn);});}
+
+function renderThemes(){const row=document.getElementById('bgRow');row.innerHTML='';const options=[{id:'aurora',label:'Aurora'},{id:'fabric',label:'Fabric'},{id:'grid',label:'Grid'},{id:'custom',label:'Custom'}];options.forEach(opt=>{const chip=document.createElement('div');chip.className='bg-chip'+(STATE.bgMode===opt.id?' active':'');chip.textContent=opt.label;chip.onclick=()=>{STATE.bgMode=opt.id;applyBackground();renderThemes();persist();};row.appendChild(chip);});}
+
+function renderPalettes(){const row=document.getElementById('paletteRow');if(!row)return;row.innerHTML='';palettes.forEach(p=>{const chip=document.createElement('div');chip.className='palette-chip'+(STATE.palette===p.id?' active':'');chip.innerHTML=`<div class=\"swatch\" style=\"background:linear-gradient(135deg,${p.accent},${p.accent2})\"></div><div>${p.name}</div>`;chip.onclick=()=>{STATE.palette=p.id;applyPalette();renderPalettes();persist();};row.appendChild(chip);});}
+
+function renderThemeStore(){const grid=document.getElementById('themeStore');if(!grid)return;grid.innerHTML='';const store=[{name:'Nebula Noir',status:'Locked',cta:'Watch ad to try'},{name:'Glass Peach',status:'Locked',cta:'Watch ad to try'},{name:'Carbon Mist',status:'Coming soon',cta:'Notify me'}];store.forEach((t,i)=>{const card=document.createElement('div');card.className='card tmpl-card lift';card.innerHTML=`<h3>${t.name}</h3><p style=\"color:var(--text2);font-size:13px\">Premium finish, animated gradients.</p><div class=\"pill\">${t.status}</div><button class=\"btn btn-primary small\" style=\"margin-top:8px\">${t.cta}</button>`;card.querySelector('button').onclick=()=>{showToast('Demo unlock coming soon');};grid.appendChild(card);});}
+
+function syncSettings(){document.getElementById('valFocus').textContent=STATE.focus;document.getElementById('valShort').textContent=STATE.short;document.getElementById('valLong').textContent=STATE.long;document.getElementById('valCycle').textContent=STATE.cycle;document.getElementById('valDaily').textContent=STATE.dailyTarget;STATE.total=getMinutes(STATE.mode)*60;STATE.seconds=Math.min(STATE.seconds,STATE.total);renderTimer();updateDots();}
+
+function buildReflection(score,xp,min){const lvl=levelFromXP(GM_STATE.xp);const streakText=STATE.streak>1?`${STATE.streak}-day chain`:'';const obj=STATE.objective?`Objective: ${STATE.objective}. `:'';return `${obj}Scored ${score}, earned ${xp} XP. ${streakText} Level ${lvl}. Showing up is momentum.`;}
+function showOverlay(score,xp,min){document.getElementById('overlayScore').textContent=score;document.getElementById('overlayTime').textContent=`${min} min focused`;document.getElementById('overlayXp').textContent=`+${xp} XP`;document.getElementById('overlayMsg').textContent=buildReflection(score,xp,min);document.getElementById('overlay').classList.add('show');}
+
+function showToast(msg){const toast=document.getElementById('toast');toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),2200);}
+
+function toggleFullscreen(){if(!document.fullscreenElement){document.documentElement.requestFullscreen?.();document.body.classList.add('fullscreen');}else{document.exitFullscreen?.();document.body.classList.remove('fullscreen');}}
+document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement){document.body.classList.remove('fullscreen');}});
+
+function requestNotification(){if(!('Notification' in window))return showToast('Not supported');Notification.requestPermission().then(res=>{showToast(res==='granted'?'Enabled notifications':'Permission denied');});}
+function notifyUser(score,xp){if(!('Notification' in window)||Notification.permission!=='granted')return;new Notification('FocusOS — Session Complete',{body:`Score ${score} · +${xp} XP`});}
+
+function playTone(freq,duration){if(!STATE.sound||!window.AudioContext)return;const ctx=playTone.ctx||(playTone.ctx=new AudioContext());const osc=ctx.createOscillator();const gain=ctx.createGain();osc.frequency.value=freq;osc.connect(gain);gain.connect(ctx.destination);const now=ctx.currentTime;gain.gain.setValueAtTime(0.0001,now);gain.gain.exponentialRampToValueAtTime(0.12,now+0.02);gain.gain.exponentialRampToValueAtTime(0.0001,now+duration/1000);osc.start(now);osc.stop(now+duration/1000);}
+function playClick(){if(!STATE.sound||!window.AudioContext)return;const ctx=clickAudioCtx||(clickAudioCtx=new AudioContext());const osc=ctx.createOscillator();const gain=ctx.createGain();osc.frequency.value=2400;osc.type='sine';osc.connect(gain);gain.connect(ctx.destination);const now=ctx.currentTime;gain.gain.setValueAtTime(0.0001,now);gain.gain.exponentialRampToValueAtTime(0.05,now+0.01);gain.gain.exponentialRampToValueAtTime(0.0001,now+0.08);osc.start(now);osc.stop(now+0.09);}
+
+function launchConfetti(){for(let i=0;i<120;i++){const piece=document.createElement('div');piece.className='confetti-piece';const hue=[200,280,160,45,320,30][Math.floor(Math.random()*6)];piece.style.background=`linear-gradient(135deg,hsl(${hue},90%,65%),hsl(${hue},90%,55%))`;piece.style.left=Math.random()*100+'%';piece.style.width=8+Math.random()*6+'px';piece.style.height=10+Math.random()*6+'px';piece.style.animationDuration=1.1+Math.random()*0.9+'s';piece.style.animationDelay=Math.random()*0.2+'s';piece.style.transform=`translate3d(${(Math.random()-.5)*40}px,-16vh,0) rotate(${Math.random()*360}deg)`;document.body.appendChild(piece);setTimeout(()=>piece.remove(),2100);} }
+
+function updateStats(){renderStats();}
+
+function exportMemories(){const blob=new Blob([JSON.stringify(STATE.memory.map(m=>({...m,timestamp:m.timestamp instanceof Date?m.timestamp.toISOString():m.timestamp})),null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`focusos-memories-${getDateKey(new Date())}.json`;a.click();URL.revokeObjectURL(url);}
+
+function clearMemories(){STATE.memory=[];STATE.sessionsDone=0;STATE.totalFocusSeconds=0;STATE.week=[0,0,0,0,0,0,0];STATE.todayMinutes=0;STATE.todayKey=getDateKey(new Date());STATE.weekAnchor=getWeekAnchor(new Date());STATE.xp=0;STATE.currentSession=1;STATE.mode='focus';STATE.total=STATE.focus*60;STATE.seconds=STATE.total;renderMemory();updateDots();renderTimer();updateStats();persist();showToast('Vault cleared');}
+
+function resetAll(){localStorage.removeItem(STORAGE_KEY);STATE={...DEFAULT_STATE,week:[...DEFAULT_STATE.week],rituals:DEFAULT_STATE.rituals.map(r=>({...r})),habits:DEFAULT_STATE.habits.map(h=>({...h}))};STATE.weekAnchor=getWeekAnchor(new Date());STATE.todayKey=getDateKey(new Date());STATE.total=getMinutes(STATE.mode)*60;STATE.seconds=STATE.total;renderAll();showToast('All data reset');}
+
+function renderAll(){renderTimer();updateDots();renderTemplates();renderFilters();renderThemes();renderPalettes();renderMemory();renderStats();renderTasks();renderRituals();renderHabits();renderQuickTemplates();renderYearProgress();renderToday();document.getElementById('objectiveInput').value=STATE.objective||'';renderLevel();applyPalette();applyBackground();syncToggles();document.getElementById('lockPill').textContent=STATE.lockMode?'🔒 Locked':'🔓 Lock';}
+
+function syncToggles(){document.getElementById('togBreaks').classList.toggle('on',STATE.autoBreak);document.getElementById('togFocus').classList.toggle('on',STATE.autoFocus);document.getElementById('togSound').classList.toggle('on',STATE.sound);document.getElementById('togResume').classList.toggle('on',STATE.autoResume);}
+
+function setPage(page){if(STATE.lockMode && page!==CURRENT_PAGE){showToast('Lock mode on—finish current block first');return;}CURRENT_PAGE=page;document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelector(`.page[data-id="${page}"]`).classList.add('active');document.querySelectorAll('.nav-tab').forEach(b=>b.classList.toggle('active',b.dataset.page===page));}
+
+function addEventListeners(){document.getElementById('startBtn').onclick=startTimer;document.getElementById('resetBtn').onclick=resetTimer;document.getElementById('skipBtn').onclick=skipSession;document.querySelectorAll('.mode-tab').forEach(btn=>btn.onclick=()=>setMode(btn.dataset.mode));document.querySelectorAll('.nav-tab').forEach(btn=>btn.onclick=()=>setPage(btn.dataset.page));
+  document.querySelectorAll('.adjust-btn').forEach(btn=>btn.onclick=()=>{adjustSetting(btn.dataset.target,Number(btn.dataset.d));});
+  document.getElementById('togBreaks').onclick=function(){STATE.autoBreak=this.classList.toggle('on');persist();};
+  document.getElementById('togFocus').onclick=function(){STATE.autoFocus=this.classList.toggle('on');persist();};
+  document.getElementById('togSound').onclick=function(){STATE.sound=this.classList.toggle('on');persist();};
+  document.getElementById('togResume').onclick=function(){STATE.autoResume=this.classList.toggle('on');persist();};
+  document.getElementById('askNotify').onclick=requestNotification;
+  document.getElementById('fullBtn').onclick=toggleFullscreen;
+  document.getElementById('lockPill').onclick=()=>{STATE.lockMode=!STATE.lockMode;document.getElementById('lockPill').textContent=STATE.lockMode?'🔒 Locked':'🔓 Lock';persist();showToast(STATE.lockMode?'Lock on: stay in flow':'Lock off: navigate freely');};
+  document.getElementById('saveObjective').onclick=()=>{STATE.objective=document.getElementById('objectiveInput').value.trim();showToast('Objective saved');persist();};
+  document.getElementById('addMemory').onclick=()=>{const title=document.getElementById('memTitle').value.trim();const note=document.getElementById('memNote').value.trim();if(!title||!note){showToast('Add title & note');return;}STATE.memory.unshift({title,score:Math.round(calcScore(STATE.focus)),duration:STATE.focus,timestamp:new Date(),note});document.getElementById('memTitle').value='';document.getElementById('memNote').value='';renderMemory();showToast('Memory preserved 🧠');persist();};
+  document.getElementById('exportMemories').onclick=exportMemories;
+  document.getElementById('clearMemories').onclick=clearMemories;
+  document.getElementById('overlayContinue').onclick=()=>{document.getElementById('overlay').classList.remove('show');setMode('focus');};
+  document.getElementById('overlayClose').onclick=()=>{document.getElementById('overlay').classList.remove('show');};
+  document.getElementById('taskAdd').onclick=addTask;document.getElementById('taskInput').addEventListener('keyup',e=>{if(e.key==='Enter')addTask();});
+  document.getElementById('clearTasks').onclick=clearCompletedTasks;
+  document.getElementById('resetRituals').onclick=()=>{STATE.rituals=STATE.rituals.map(r=>({...r,done:false}));renderRituals();persist();};
+  document.getElementById('addHabit').onclick=addHabit;document.getElementById('habitInput').addEventListener('keyup',e=>{if(e.key==='Enter')addHabit();});
+  document.getElementById('openTemplates').onclick=()=>{document.querySelector('.nav-tab[data-page="templates"]').click();};
+  document.getElementById('resetAll').onclick=resetAll;
+  document.getElementById('bgUpload').onchange=e=>{const file=e.target.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{STATE.bgMode='custom';STATE.bgCustom=ev.target.result;applyBackground();renderThemes();persist();};reader.readAsDataURL(file);};
+  window.addEventListener('click',()=>playClick());
+  window.addEventListener('keydown',e=>{const active=document.activeElement;if(active&&['INPUT','TEXTAREA'].includes(active.tagName))return;if(e.code==='Space'){e.preventDefault();startTimer();}if(e.key==='r'||e.key==='R')resetTimer();if(e.key==='s'||e.key==='S')skipSession();if(e.key==='1')setMode('focus');if(e.key==='2')setMode('short');if(e.key==='3')setMode('long');if(e.key==='f'||e.key==='F')toggleFullscreen();if(e.key==='n'||e.key==='N'){document.getElementById('objectiveInput').focus();}});
+}
+
+function adjustSetting(key,delta){const limits={focus:[5,180],short:[1,45],long:[5,90],cycle:[1,10],dailyTarget:[20,600]};STATE[key]=Math.max(limits[key][0],Math.min(limits[key][1],STATE[key]+delta));syncSettings();persist();}
+
+function renderFiltersAndTemplates(){renderFilters();renderTemplates();}
+
+function loadFromStorageAndInit(){loadState();GM_STATE={ xp: STATE.xp || 0, streak: STATE.streak || 1 };const today=getDateKey(new Date());if(GM_STATE.lastSessionDate){const diff=(new Date(today)-new Date(GM_STATE.lastSessionDate))/(1000*60*60*24);if(diff>1)applyEffects(onStreakBroken());}
+ensureAnchors();STATS.sessions=STATE.sessionsDone;STATS.totalMinutes=Math.floor(STATE.totalFocusSeconds/60);STATS.tasksCompleted=STATE.tasks.filter(t=>t.done).length;STATE.total=getMinutes(STATE.mode)*60;if(!STATE.seconds||STATE.seconds>STATE.total)STATE.seconds=STATE.total;renderAll();setPlantMood(false);if(STATE.autoResume&&STATE.seconds>0&&STATE.seconds<STATE.total){startTimer();}}
+
+loadFromStorageAndInit();
+addEventListeners();
+renderFiltersAndTemplates();
+const splash=document.getElementById('splash');if(splash)setTimeout(()=>splash.classList.add('hide'),1300);
+renderThemeStore();
+
+// Note: The heavy app logic remains in the existing inline module script.
+// We now load modular enhancements for Monk Mode, Ambient, and Blocker.
+import './src/ambient.js';
+import './src/monkMode.js';
+import './src/blocker.js';
+</script>
+<script type="module" src="./src/bootstrap.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FocusOS — Landing</title>
+    <style>
+      html,body{height:100%;}
+      body{margin:0;font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;background:#0b0b0f;color:#fff;}
+      .hero{min-height:100%;display:grid;place-items:center;background:linear-gradient(135deg,#0a0a0f 0%, #0b1020 100%);} 
+      .card{background: rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); padding:40px;border-radius:20px;max-width:760px; text-align:left}
+      h1{font-size: clamp(28px,6vw,56px); margin:0 0 12px}
+      p{opacity:.9}
+      .cta{display:inline-flex;gap:12px;margin-top:20px}
+      .btn{border:1px solid #fff;background:transparent;color:#fff;padding:12px 20px;border-radius:999px;font-weight:700;cursor:pointer}
+      .btn.primary{ background: linear-gradient(135deg,#7dd6ff,#c6a4ff); color:#0b0c14; border:none }
+      .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:20px}
+      .feature{padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,.1)}
+    </style>
+  </head>
+  <body>
+    <main class="hero">
+      <section class="card" style="max-width:720px">
+        <h1>Kill distractions. Enter deep work.</h1>
+        <p>FocusOS is your personal focus operating system. A premium, high-performance workspace designed to help you dive deep and stay there.</p>
+        <div class="cta">
+          <button class="btn primary" onclick="location.href='index.html'">Start Focus Session</button>
+          <button class="btn" onclick="alert('Demo only')">View Demo</button>
+        </div>
+      </section>
+      <section class="grid" style="width:90%;max-width:1100px; margin-top:28px;">
+        <div class="feature">Monk Mode — fullscreen, distraction-free interface</div>
+        <div class="feature">Rain / Forest ambience with smart mute</div>
+        <div class="feature">Dopamine detox insights after each session</div>
+        <div class="feature">Block social sites while in Monk Mode</div>
+      </section>
+    </main>
+  </body>
+</html>
