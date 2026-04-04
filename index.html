@@ -296,6 +296,67 @@ body.fullscreen .timer-card{max-width:420px}
 .support-card img{border-radius:14px;margin-bottom:8px}
 .support-card .upi{font-size:11px;color:var(--text3);margin-top:4px}
 
+/* Shareable Session Card */
+.share-card{background:linear-gradient(135deg,rgba(125,214,255,.08),rgba(198,164,255,.08));border:1px solid var(--border);border-radius:20px;padding:24px;max-width:360px;margin:0 auto;text-align:center;position:relative;overflow:hidden}
+.share-card::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(125,214,255,.05),rgba(198,164,255,.05));pointer-events:none}
+.share-card .score{font-size:64px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.share-card .meta{font-size:13px;color:var(--text2);margin-top:8px}
+.share-card .brand{font-size:11px;color:var(--text3);margin-top:16px;letter-spacing:2px;text-transform:uppercase}
+.share-actions{display:flex;gap:8px;margin-top:16px;justify-content:center}
+
+/* Weekly Review */
+.review-header{text-align:center;margin-bottom:24px}
+.review-header h3{font-size:22px;font-weight:800}
+.review-header p{color:var(--text2);font-size:14px;margin-top:4px}
+.review-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
+.review-item{text-align:center;padding:16px;background:var(--surface2);border-radius:14px;border:1px solid var(--border)}
+.review-item .val{font-size:28px;font-weight:800}
+.review-item .label{font-size:11px;color:var(--text2);margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+.review-insight{padding:16px;background:rgba(125,214,255,.06);border:1px solid rgba(125,214,255,.15);border-radius:14px;font-size:14px;color:var(--text2);line-height:1.6}
+.review-insight strong{color:var(--accent)}
+
+/* Goals */
+.goals-container{display:flex;flex-direction:column;gap:14px}
+.goal-card{padding:18px;background:var(--surface2);border-radius:14px;border:1px solid var(--border);transition:var(--transition)}
+.goal-card:hover{border-color:var(--accent)}
+.goal-card .goal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.goal-card .goal-title{font-size:14px;font-weight:700}
+.goal-card .goal-xp{font-size:11px;color:var(--accent);font-weight:600}
+.goal-card .goal-bar{height:6px;border-radius:6px;background:var(--surface3);overflow:hidden;margin-top:8px}
+.goal-card .goal-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:6px;transition:width .5s ease}
+.goal-card .goal-status{font-size:11px;color:var(--text2);margin-top:6px}
+.goal-add{display:flex;gap:8px;margin-top:12px}
+.goal-add input{flex:1;border-radius:12px;border:1px solid var(--border);background:var(--surface2);color:var(--text);padding:12px 14px;font-family:var(--font);font-size:13px}
+.goal-add input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.goal-add input::placeholder{color:var(--text3)}
+
+/* Focus Playlist */
+.playlist-card{display:flex;align-items:center;gap:14px;padding:14px;background:var(--surface2);border-radius:14px;border:1px solid var(--border);margin-bottom:10px;transition:var(--transition);cursor:pointer}
+.playlist-card:hover{border-color:var(--accent);transform:translateX(4px)}
+.playlist-card .pl-icon{font-size:32px;width:48px;height:48px;display:grid;place-items:center;background:var(--surface3);border-radius:12px;flex-shrink:0}
+.playlist-card .pl-info{flex:1}
+.playlist-card .pl-name{font-size:14px;font-weight:600}
+.playlist-card .pl-desc{font-size:11px;color:var(--text2);margin-top:2px}
+.playlist-card .pl-play{font-size:20px;color:var(--accent)}
+
+/* Focus Community */
+.community-stat{text-align:center;padding:20px;background:var(--surface2);border-radius:14px;border:1px solid var(--border);margin-bottom:14px}
+.community-stat .num{font-size:36px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.community-stat .label{font-size:12px;color:var(--text2);margin-top:4px}
+.community-activity{display:flex;flex-direction:column;gap:8px}
+.community-activity-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface2);border-radius:10px;font-size:13px}
+.community-activity-item .dot-live{width:8px;height:8px;border-radius:50%;background:var(--green);animation:livePulse 2s ease-in-out infinite}
+@keyframes livePulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(52,211,153,.4)}50%{opacity:.7;box-shadow:0 0 0 6px rgba(52,211,153,0)}}
+
+/* Page Transitions */
+.page-enter{animation:pageSlideIn .4s cubic-bezier(.4,0,.2,1)}
+@keyframes pageSlideIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* Card Shimmer */
+.card-shimmer{position:relative;overflow:hidden}
+.card-shimmer::after{content:"";position:absolute;top:0;left:-100%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.03),transparent);animation:shimmer 3s ease-in-out infinite}
+@keyframes shimmer{0%{left:-100%}100%{left:200%}}
+
 /* Responsive */
 @media(max-width:960px){
   .hero-grid{grid-template-columns:1fr}
@@ -349,6 +410,8 @@ body.fullscreen .timer-card{max-width:420px}
       <button class="nav-tab" data-page="achievements">Achievements</button>
       <button class="nav-tab" data-page="learn">Learn</button>
       <button class="nav-tab" data-page="leaderboard">Leaderboard</button>
+      <button class="nav-tab" data-page="goals">Goals</button>
+      <button class="nav-tab" data-page="community">Community</button>
       <button class="nav-tab" data-page="themes">Themes</button>
       <button class="nav-tab" data-page="settings">Settings</button>
     </div>
@@ -528,6 +591,14 @@ body.fullscreen .timer-card{max-width:420px}
         <h4 style="font-size:14px;margin-bottom:12px">Daily Challenges</h4>
         <div id="challengesContainer" style="display:flex;flex-direction:column;gap:10px"></div>
       </div>
+      <div class="card lift" style="margin-top:18px">
+        <h4 style="font-size:14px;margin-bottom:12px">Weekly Review</h4>
+        <div id="weeklyReviewContainer"></div>
+      </div>
+      <div class="card lift" style="margin-top:18px">
+        <h4 style="font-size:14px;margin-bottom:12px">Share Your Session</h4>
+        <div id="shareCardContainer"></div>
+      </div>
     </section>
 
     <!-- Habits -->
@@ -591,6 +662,42 @@ body.fullscreen .timer-card{max-width:420px}
       <p style="color:var(--text2);font-size:14px;margin-bottom:12px">Pick a protocol to load durations instantly.</p>
       <div class="filter-bar" id="filterBar"></div>
       <div class="tmpl-grid" id="tmplGrid"></div>
+    </section>
+
+    <!-- Goals -->
+    <section class="page" data-id="goals">
+      <h2 style="font-size:26px;font-weight:900;margin-bottom:8px">Goals</h2>
+      <p style="color:var(--text2);font-size:14px;margin-bottom:18px">Set targets. Track progress. Level up your focus life.</p>
+      <div id="goalsContainer"></div>
+      <div class="goal-add">
+        <input id="goalInput" placeholder="Add a goal (e.g., Focus 2 hours daily)">
+        <button class="btn btn-primary small" id="addGoal">Add</button>
+      </div>
+    </section>
+
+    <!-- Community -->
+    <section class="page" data-id="community">
+      <h2 style="font-size:26px;font-weight:900;margin-bottom:8px">Focus Community</h2>
+      <p style="color:var(--text2);font-size:14px;margin-bottom:18px">See who's focusing right now. You're never alone.</p>
+      <div id="communityContainer"></div>
+    </section>
+
+    <!-- Goals -->
+    <section class="page" data-id="goals">
+      <h2 style="font-size:26px;font-weight:900;margin-bottom:8px">Goals</h2>
+      <p style="color:var(--text2);font-size:14px;margin-bottom:18px">Set targets. Track progress. Level up your focus life.</p>
+      <div id="goalsContainer"></div>
+      <div class="goal-add">
+        <input id="goalInput" placeholder="Add a goal (e.g., Focus 2 hours daily)">
+        <button class="btn btn-primary small" id="addGoal">Add</button>
+      </div>
+    </section>
+
+    <!-- Community -->
+    <section class="page" data-id="community">
+      <h2 style="font-size:26px;font-weight:900;margin-bottom:8px">Focus Community</h2>
+      <p style="color:var(--text2);font-size:14px;margin-bottom:18px">See who's focusing right now. You're never alone.</p>
+      <div id="communityContainer"></div>
     </section>
 
     <!-- Themes -->
@@ -761,6 +868,15 @@ const LEARN_POSTS=[
   ]}
 ];
 
+const PLAYLISTS=[
+  {name:'Lofi Beats',desc:'Chill beats for deep focus',icon:'🎵',url:'https://www.youtube.com/watch?v=jfKfPfyJRdk'},
+  {name:'Deep Focus',desc:'Ambient electronic for concentration',icon:'🧠',url:'https://www.youtube.com/watch?v=5qap5aO4i9A'},
+  {name:'Classical Study',desc:'Mozart, Bach, Beethoven for clarity',icon:'🎻',url:'https://www.youtube.com/watch?v=8DvyVOwvRoE'},
+  {name:'Nature Sounds',desc:'Forest streams and birdsong',icon:'🌿',url:'https://www.youtube.com/watch?v=2v8l5fOaCqo'},
+  {name:'Binaural Focus',desc:'40Hz gamma waves for concentration',icon:'🔊',url:'https://www.youtube.com/watch?v=8vNzfkFKkzE'},
+  {name:'Coffee Shop',desc:'Ambient cafe atmosphere',icon:'☕',url:'https://www.youtube.com/watch?v=2Vv-bfVoq4g'}
+];
+
 let GM={xp:0,streak:1};
 const ST={sessions:0,tasks:0,mins:0};
 
@@ -777,7 +893,7 @@ const DEFAULTS={
   achievements:[],totalSessions:0,
   personalBest:{sessions:0,minutes:0,streak:0,score:0},
   heatmap:{},challengesCompleted:[],lastChallengeDate:'',
-  moodHistory:[]
+  moodHistory:[],goals:[],sessionHistory:[]
 };
 
 let S={...DEFAULTS};
@@ -847,7 +963,7 @@ function updateStreak(){const tk=dk(new Date());if(!S.lastDate)S.streak=1;else{c
 
 function checkAchievements(){const newUnlocks=[];ACHIEVEMENTS.forEach(a=>{if(!S.achievements.includes(a.id)&&a.check(S)){S.achievements.push(a.id);S.xp+=a.xp;GM.xp+=a.xp;newUnlocks.push(a)}});if(newUnlocks.length){newUnlocks.forEach(a=>{toast('🏆 Achievement: '+a.name+' (+'+a.xp+' XP)')});confetti();renderAchievements();save()}}
 
-function complete(skipped){anchors();if(S.mode==='focus'){const es=Math.max(0,S.total-S.sec);const em=Math.max(1,Math.round(es/60));if(!skipped){S.done++;S.totalSessions++;ST.sessions=S.done;S.totalSec+=es;S.todayMins+=em;ST.mins=Math.floor(S.totalSec/60);const sc=Math.round(score(em));const xp=sc*2;GM.xp+=xp;S.xp+=xp;setPlant(false);const di=(new Date().getDay()+6)%7;S.week[di]+=em;S.memory.unshift({title:S.objective||'Untitled',sc:sc,dur:em,ts:new Date(),note:S.objective||'No objective'});renderMemory();showOv(sc,xp,em);notify(sc,xp);tone(880,220);showXpPopup(xp);updatePersonalBest(em,sc);saveHeatmap();checkAchievements();checkDailyChallenges()}else{S.skipped++;setPlant(true)}S.cur++;if(S.cur>S.cycle){S.cur=1;setMode('long');if(S.autoBreak)startTimer()}else{if(S.mode==='focus'){setMode('short');if(S.autoBreak)startTimer()}else{setMode('focus');if(S.autoFocus)startTimer()}}updateStats();save()}}
+function complete(skipped){anchors();if(S.mode==='focus'){const es=Math.max(0,S.total-S.sec);const em=Math.max(1,Math.round(es/60));if(!skipped){S.done++;S.totalSessions++;ST.sessions=S.done;S.totalSec+=es;S.todayMins+=em;ST.mins=Math.floor(S.totalSec/60);const sc=Math.round(score(em));const xp=sc*2;GM.xp+=xp;S.xp+=xp;setPlant(false);const di=(new Date().getDay()+6)%7;S.week[di]+=em;S.memory.unshift({title:S.objective||'Untitled',sc:sc,dur:em,ts:new Date(),note:S.objective||'No objective'});S.sessionHistory.unshift({sc:sc,dur:em,xp:xp,streak:S.streak,level:lvl(GM.xp),ts:new Date()});renderMemory();showOv(sc,xp,em);notify(sc,xp);tone(880,220);showXpPopup(xp);updatePersonalBest(em,sc);saveHeatmap();checkAchievements();checkDailyChallenges()}else{S.skipped++;setPlant(true)}S.cur++;if(S.cur>S.cycle){S.cur=1;setMode('long');if(S.autoBreak)startTimer()}else{if(S.mode==='focus'){setMode('short');if(S.autoBreak)startTimer()}else{setMode('focus');if(S.autoFocus)startTimer()}}updateStats();save()}}
 
 function renderRituals(){const l=document.getElementById('ritualList');l.innerHTML='';S.rituals.forEach(function(r,i){const item=document.createElement('label');item.className='checklist-item';item.innerHTML='<input type="checkbox" '+(r.d?'checked':'')+'><span>'+r.l+'</span>';item.querySelector('input').onchange=function(e){S.rituals[i].d=e.target.checked;save()};l.appendChild(item)})}
 
@@ -908,7 +1024,7 @@ function clearMem(){S.memory=[];S.done=0;S.totalSec=0;S.week=[0,0,0,0,0,0,0];S.t
 
 function resetAll(){localStorage.removeItem(KEY);S=Object.assign({},DEFAULTS,{week:[...DEFAULTS.week],rituals:DEFAULTS.rituals.map(function(r){return Object.assign({},r)}),habits:[],achievements:[]});S.weekAnchor=wkAnchor(new Date());S.todayKey=dk(new Date());S.total=mins(S.mode)*60;S.sec=S.total;renderAll();toast('All data reset')}
 
-function renderAll(){renderTimer();renderDots();renderTmpl('All');renderFilters();renderBg();renderPal();renderMemory();renderStats();renderTasks();renderRituals();renderHabits();renderYear();renderToday();document.getElementById('objectiveInput').value=S.objective||'';renderLvl();applyPal();applyBg();syncToggles();document.getElementById('lockPill').textContent=S.lock?'Locked':'Lock';renderAchievements();renderHeatmap();renderChallenges();renderPersonalBests();renderLearn()}
+function renderAll(){renderTimer();renderDots();renderTmpl('All');renderFilters();renderBg();renderPal();renderMemory();renderStats();renderTasks();renderRituals();renderHabits();renderYear();renderToday();document.getElementById('objectiveInput').value=S.objective||'';renderLvl();applyPal();applyBg();syncToggles();document.getElementById('lockPill').textContent=S.lock?'Locked':'Lock';renderAchievements();renderHeatmap();renderChallenges();renderPersonalBests();renderLearn();renderGoals();renderCommunity();renderShareCard();renderWeeklyReview()}
 
 function syncToggles(){document.getElementById('togBreaks').classList.toggle('on',S.autoBreak);document.getElementById('togFocus').classList.toggle('on',S.autoFocus);document.getElementById('togSound').classList.toggle('on',S.sound);document.getElementById('togResume').classList.toggle('on',S.autoResume)}
 
@@ -946,6 +1062,16 @@ function renderPersonalBests(){var container=document.getElementById('personalBe
 
 function renderLearn(){var container=document.getElementById('learnContainer');if(!container)return;container.innerHTML='';LEARN_POSTS.forEach(function(cat){var section=document.createElement('div');section.style.marginBottom='28px';var header=document.createElement('h3');header.style.fontSize='16px';header.style.fontWeight='700';header.style.marginBottom='12px';header.style.display='flex';header.style.alignItems='center';header.style.gap='8px';header.innerHTML=cat.icon+' '+cat.cat;section.appendChild(header);var grid=document.createElement('div');grid.style.display='grid';grid.style.gridTemplateColumns='repeat(auto-fit,minmax(260px,1fr))';grid.style.gap='12px';cat.posts.forEach(function(post){var card=document.createElement('a');card.className='card lift';card.style.textDecoration='none';card.style.color='inherit';card.style.display='block';card.style.cursor='pointer';card.href=post.url;card.target='_blank';card.rel='noopener noreferrer';card.innerHTML='<div style="font-size:14px;font-weight:600;margin-bottom:6px">'+post.title+'</div><div style="font-size:12px;color:var(--text2);line-height:1.5">'+post.desc+'</div><div style="font-size:11px;color:var(--accent);margin-top:8px">Read more →</div>';grid.appendChild(card)});section.appendChild(grid);container.appendChild(section)})}
 
+function renderGoals(){var container=document.getElementById('goalsContainer');if(!container)return;container.innerHTML='';if(!S.goals||!S.goals.length){container.innerHTML='<div class="empty-state"><div class="icon">🎯</div><p>Set your first focus goal to get started.</p></div>';return}S.goals.forEach(function(g,i){var card=document.createElement('div');card.className='goal-card';var progress=Math.min(100,Math.round((g.current/g.target)*100));card.innerHTML='<div class="goal-head"><div class="goal-title">'+g.title+'</div><div class="goal-xp">+'+g.xp+' XP</div></div><div class="goal-bar"><div class="goal-bar-fill" style="width:'+progress+'%"></div></div><div class="goal-status">'+progress+'% complete'+(g.current>=g.target?' ✅':'')+'</div>';container.appendChild(card)})}
+
+function addGoal(){var v=document.getElementById('goalInput').value.trim();if(!v)return;S.goals.push({title:v,target:100,current:0,xp:200});document.getElementById('goalInput').value='';renderGoals();save();toast('Goal added! 🎯')}
+
+function renderCommunity(){var container=document.getElementById('communityContainer');if(!container)return;container.innerHTML='';var seed=Math.floor(Date.now()/60000);var activeUsers=120+((seed*7)%380);var totalFocus=((seed*13)%500)+200;var stats=document.createElement('div');stats.className='community-stat';stats.innerHTML='<div class="num">'+activeUsers+'</div><div class="label">People focusing right now</div>';container.appendChild(stats);var stats2=document.createElement('div');stats2.className='community-stat';stats2.innerHTML='<div class="num">'+totalFocus+'h</div><div class="label">Total focus hours today</div>';container.appendChild(stats2);var h3=document.createElement('h3');h3.style.fontSize='15px';h3.style.fontWeight='700';h3.style.marginBottom='12px';h3.textContent='Live Activity';container.appendChild(h3);var act=document.createElement('div');act.className='community-activity';var activities=['Someone in Tokyo completed a 50min session','A user in London hit a 14-day streak','3 people just started focusing','Someone in NYC scored 95 on their session','A user in Berlin completed 4 sessions today','Someone in Mumbai just reached Level 10'];activities.forEach(function(a){var item=document.createElement('div');item.className='community-activity-item';item.innerHTML='<div class="dot-live"></div><span>'+a+'</span>';act.appendChild(item)});container.appendChild(act);var playlist=document.createElement('h3');playlist.style.fontSize='15px';playlist.style.fontWeight='700';playlist.style.margin='20px 0 12px';playlist.textContent='Focus Playlists';container.appendChild(playlist);PLAYLISTS.forEach(function(pl){var card=document.createElement('a');card.className='playlist-card';card.href=pl.url;card.target='_blank';card.rel='noopener noreferrer';card.innerHTML='<div class="pl-icon">'+pl.icon+'</div><div class="pl-info"><div class="pl-name">'+pl.name+'</div><div class="pl-desc">'+pl.desc+'</div></div><div class="pl-play">▶</div>';container.appendChild(card)})}
+
+function renderShareCard(){var container=document.getElementById('shareCardContainer');if(!container)return;container.innerHTML='';if(!S.sessionHistory||!S.sessionHistory.length){container.innerHTML='<div class="empty-state"><div class="icon">📤</div><p>Complete a session to generate a shareable card.</p></div>';return}var last=S.sessionHistory[0];var card=document.createElement('div');card.className='share-card';card.id='shareCard';card.innerHTML='<div style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--text3);margin-bottom:12px">FocusOS Session</div><div class="score">'+last.sc+'</div><div class="meta">'+last.dur+' min focused · '+last.xp+' XP earned</div><div style="display:flex;justify-content:center;gap:16px;margin-top:12px;font-size:12px;color:var(--text2)"><span>🔥 '+last.streak+' day streak</span><span>📊 Lv '+last.level+'</span></div><div class="brand">FocusOS — Deep Work OS</div>';var actions=document.createElement('div');actions.className='share-actions';var copyBtn=document.createElement('button');copyBtn.className='btn btn-primary small';copyBtn.textContent='Copy as Image';copyBtn.onclick=function(){toast('Screenshot this card to share!')};actions.appendChild(copyBtn);container.appendChild(actions)}
+
+function renderWeeklyReview(){var container=document.getElementById('weeklyReviewContainer');if(!container)return;container.innerHTML='';var totalWeek=S.week.reduce(function(a,b){return a+b},0);var bestDay=Math.max.apply(null,S.week);var bestIdx=S.week.indexOf(bestDay);var days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];var grid=document.createElement('div');grid.className='review-grid';var items=[{val:totalWeek+'m',label:'Total Focus'},{val:S.done,label:'Sessions'},{val:bestDay+'m',label:'Best Day ('+days[bestIdx]+')'},{val:S.streak,label:'Current Streak'}];items.forEach(function(it){var div=document.createElement('div');div.className='review-item';div.innerHTML='<div class="val">'+it.val+'</div><div class="label">'+it.label+'</div>';grid.appendChild(div)});container.appendChild(grid);var insight=document.createElement('div');insight.className='review-insight';var msg='';if(totalWeek>=S.dailyTarget*5)msg='🔥 <strong>Incredible week!</strong> You crushed your targets. Keep this momentum going.';else if(totalWeek>=S.dailyTarget*3)msg='💪 <strong>Solid week.</strong> You\'re building real discipline. Push for more next week.';else if(totalWeek>0)msg='🌱 <strong>Good start.</strong> Every minute counts. Set a higher target and chase it.';else msg='🎯 <strong>Fresh start.</strong> This week is yours to own. Begin with one session.';insight.innerHTML=msg;container.appendChild(insight)}
+
 function getFocusLevel(){var xp=S.xp||0;var level=FOCUS_LEVELS[0];for(var i=FOCUS_LEVELS.length-1;i>=0;i--){if(xp>=FOCUS_LEVELS[i].min){level=FOCUS_LEVELS[i];break}}return level}
 
 function notify(sc,xp){if(!('Notification' in window)||Notification.permission!=='granted')return;new Notification('FocusOS',{body:'Score '+sc+' · +'+xp+' XP'})}
@@ -982,7 +1108,9 @@ document.getElementById('bgUpload').onchange=function(e){const f=e.target.files[
 document.getElementById('blockDismiss').onclick=function(){document.getElementById('blockOverlay').classList.remove('show')};
 window.addEventListener('keydown',function(e){const a=document.activeElement;if(a&&['INPUT','TEXTAREA'].includes(a.tagName))return;if(e.code==='Space'){e.preventDefault();startTimer()}if(e.key==='r'||e.key==='R')resetTimer();if(e.key==='s'||e.key==='S')skipSession();if(e.key==='1')setMode('focus');if(e.key==='2')setMode('short');if(e.key==='3')setMode('long');if(e.key==='f'||e.key==='F')toggleFS()});
 window.addEventListener('click',function(){playClick()});
-document.querySelectorAll('.mobile-nav-btn').forEach(function(b){b.onclick=function(){setPage(b.dataset.page);updateMobileNav()}})}
+document.querySelectorAll('.mobile-nav-btn').forEach(function(b){b.onclick=function(){setPage(b.dataset.page);updateMobileNav()}});
+document.getElementById('addGoal').onclick=addGoal;
+document.getElementById('goalInput').addEventListener('keyup',function(e){if(e.key==='Enter')addGoal()})}
 
 // Tab-switch detection
 var tabSwitches=0;
