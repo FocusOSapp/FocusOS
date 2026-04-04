@@ -282,33 +282,17 @@ body.fullscreen .timer-card{max-width:420px}
 #focus-plant{width:200px;height:240px;margin:0 auto;display:block}
 #focus-plant .pot{fill:url(#potGrad)}
 #focus-plant .soil{fill:#3d2b1f}
-#focus-plant .stem{stroke:url(#stemGrad);stroke-width:5;stroke-linecap:round;stroke-dasharray:120;stroke-dashoffset:120;animation:stemGrow 2s ease-out forwards;transform-origin:100px 170px}
-#focus-plant .leaf{fill:url(#leafGrad);opacity:0;animation:leafSprout 1.2s ease-out forwards;transform-origin:center bottom}
-#focus-plant .leaf.l2{animation-delay:.2s}
-#focus-plant .leaf.l3{animation-delay:.35s}
-#focus-plant .leaf.l4{animation-delay:.5s}
-#focus-plant .leaf.l5{animation-delay:.65s}
-#focus-plant .face{animation:faceAppear .8s ease-out forwards 1s;opacity:0}
+#focus-plant .stem{stroke:url(#stemGrad);stroke-width:5;stroke-linecap:round;transition:d .8s cubic-bezier(.4,0,.2,1)}
+#focus-plant .leaf{fill:url(#leafGrad);transition:opacity .6s ease}
+#focus-plant .face{transition:opacity .6s ease}
 #focus-plant .eye{fill:#c8e6c9}
-#focus-plant .mouth{fill:none;stroke:#c8e6c9;stroke-width:2;stroke-linecap:round}
-#focus-plant .glow{fill:url(#glowGrad);opacity:.1;animation:glowPulse 3s ease-in-out infinite}
+#focus-plant .mouth{fill:none;stroke:#c8e6c9;stroke-width:2;stroke-linecap:round;transition:d .4s ease}
+#focus-plant .glow{fill:url(#glowGrad);opacity:.1;transition:opacity .6s ease}
 #focus-plant.sad .mouth{d:path("M92 148 Q100 144 108 148")}
 #focus-plant.sad .eye{transform:translateY(1px)}
-#focus-plant.sad .glow{opacity:.03;animation:none}
-#focus-plant.sad .leaf{animation:leafDroop 4s ease-in-out infinite}
+#focus-plant.sad .glow{opacity:.03}
 #focus-plant.happy .mouth{d:path("M92 146 Q100 154 108 146")}
-#focus-plant.happy .glow{opacity:.18;animation:glowPulse 2s ease-in-out infinite}
-#focus-plant.happy .leaf{animation:leafDance 2s ease-in-out infinite}
-#focus-plant.happy .leaf.l2{animation-delay:.1s}
-#focus-plant.happy .leaf.l3{animation-delay:.2s}
-#focus-plant.happy .leaf.l4{animation-delay:.3s}
-#focus-plant.happy .leaf.l5{animation-delay:.4s}
-@keyframes stemGrow{to{stroke-dashoffset:0}}
-@keyframes leafSprout{from{opacity:0;transform:scale(0) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
-@keyframes leafDroop{0%,100%{transform:translateY(2px) rotate(2deg)}50%{transform:translateY(6px) rotate(5deg)}}
-@keyframes leafDance{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-3px) rotate(2deg)}}
-@keyframes faceAppear{to{opacity:1}}
-@keyframes glowPulse{0%,100%{opacity:.08}50%{opacity:.16}}
+#focus-plant.happy .glow{opacity:.18}
 
 /* Achievements */
 .achievements-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:14px}
@@ -531,29 +515,26 @@ body.fullscreen .timer-card{max-width:420px}
                   <linearGradient id="leafGrad" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8ee59a"/><stop stop-color="#4cae6f" offset="1"/></linearGradient>
                   <linearGradient id="potGrad" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#a0785a"/><stop stop-color="#7a5c42" offset="1"/></linearGradient>
                 </defs>
-                <!-- Glow -->
                 <ellipse class="glow" cx="100" cy="170" rx="50" ry="20"/>
-                <!-- Pot -->
                 <path class="pot" d="M65 175 L70 210 L130 210 L135 175 Z"/>
                 <rect class="pot" x="60" y="168" width="80" height="10" rx="3"/>
-                <!-- Soil -->
                 <ellipse class="soil" cx="100" cy="172" rx="35" ry="5"/>
-                <!-- Stem -->
-                <path class="stem" d="M100 170 C100 155 99 140 100 125 C101 110 103 95 100 80"/>
-                <!-- Leaves -->
-                <path class="leaf l1" d="M100 140 C85 132 72 120 66 108 C80 112 92 122 100 140"/>
-                <path class="leaf l2" d="M100 140 C115 132 128 120 134 108 C120 112 108 122 100 140"/>
-                <path class="leaf l3" d="M94 125 C83 115 75 102 73 90 C85 96 96 106 94 125"/>
-                <path class="leaf l4" d="M106 125 C117 115 125 102 127 90 C115 96 104 106 106 125"/>
-                <path class="leaf l5" d="M100 112 C96 100 94 88 94 76 C102 84 108 96 100 112"/>
-                <!-- Face -->
-                <g class="face">
+                <path id="plantStem" class="stem" d="M100 170 C100 170 100 170 100 170"/>
+                <g id="plantLeaves">
+                  <path class="leaf l1" d="M100 160 C88 154 78 146 72 136 C84 140 94 148 100 160" opacity="0"/>
+                  <path class="leaf l2" d="M100 160 C112 154 122 146 128 136 C116 140 106 148 100 160" opacity="0"/>
+                  <path class="leaf l3" d="M100 140 C90 132 82 122 80 112 C90 118 98 126 100 140" opacity="0"/>
+                  <path class="leaf l4" d="M100 140 C110 132 118 122 120 112 C110 118 102 126 100 140" opacity="0"/>
+                  <path class="leaf l5" d="M100 120 C96 110 94 100 94 90 C102 96 108 106 100 120" opacity="0"/>
+                </g>
+                <g class="face" id="plantFace" opacity="0">
                   <circle class="eye" cx="92" cy="142" r="3"/>
                   <circle class="eye" cx="108" cy="142" r="3"/>
                   <path class="mouth" d="M92 148 Q100 154 108 148"/>
                 </g>
               </svg>
             </div>
+          </div>
           </div>
         </div>
       </div>
@@ -1000,7 +981,7 @@ function applyPal(){const p=PALETTES.find(x=>x.id===S.palette)||PALETTES[0];cons
 
 function updateCircle(){const pct=S.sec/S.total;document.getElementById('timerPath').style.strokeDashoffset=CIRC*(1-pct)}
 
-function renderTimer(){document.getElementById('timerDisplay').textContent=fmt(S.sec);document.getElementById('timerState').textContent=S.running?'IN PROGRESS':S.sec===S.total?'READY':'PAUSED';document.getElementById('sessionLabel').textContent=S.mode==='focus'?'Focus Session':S.mode==='short'?'Short Break':'Long Break';const el=Math.max(1,(S.total-S.sec)/60);const sc=Math.round(score(el));document.getElementById('liveScore').textContent=sc;document.getElementById('scoreBar').style.width=Math.min(100,sc)+'%';document.getElementById('startBtn').textContent=S.running?'Pause':S.sec===S.total?'Start':'Resume';const nx=S.mode==='focus'?'Short Break':'Focus';document.getElementById('nextActionPill').textContent=`Up next: ${nx}`;updateCircle();renderLvl();updateTimerBreathing()}
+function renderTimer(){document.getElementById('timerDisplay').textContent=fmt(S.sec);document.getElementById('timerState').textContent=S.running?'IN PROGRESS':S.sec===S.total?'READY':'PAUSED';document.getElementById('sessionLabel').textContent=S.mode==='focus'?'Focus Session':S.mode==='short'?'Short Break':'Long Break';const el=Math.max(1,(S.total-S.sec)/60);const sc=Math.round(score(el));document.getElementById('liveScore').textContent=sc;document.getElementById('scoreBar').style.width=Math.min(100,sc)+'%';document.getElementById('startBtn').textContent=S.running?'Pause':S.sec===S.total?'Start':'Resume';const nx=S.mode==='focus'?'Short Break':'Focus';document.getElementById('nextActionPill').textContent=`Up next: ${nx}`;updateCircle();renderLvl();updateTimerBreathing();growPlant()}
 
 function setMode(m){S.mode=m;S.running=false;clearInterval(S.interval);const mn=mins(m);S.sec=mn*60;S.total=S.sec;document.querySelectorAll('.mode-tab').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));renderTimer();renderDots();save()}
 
@@ -1087,6 +1068,8 @@ function setPage(p){if(S.lock&&p!==page){toast('Locked — finish current block'
 function renderLvl(){var level=getFocusLevel();var l=lvl(GM.xp);var xpPct=(GM.xp||0)%100;document.getElementById('xpPill').textContent=level.icon+' Lv '+l;var fill=document.getElementById('xpBarFill');var label=document.getElementById('xpLabel');if(fill)fill.style.width=xpPct+'%';if(label)label.textContent=xpPct+' / 100 XP to Level '+(l+1)}
 
 function setPlant(sad){const p=document.getElementById('focus-plant');if(!p)return;p.classList.remove('sad','happy');if(sad){p.classList.add('sad')}else{p.classList.add('happy')}}
+
+function growPlant(){const stem=document.getElementById('plantStem');const leaves=document.querySelectorAll('#plantLeaves .leaf');const face=document.getElementById('plantFace');if(!stem||!S.running||S.mode!=='focus')return;const elapsed=S.total-S.sec;const maxTime=S.total;const progress=Math.min(1,elapsed/maxTime);const startY=170;const endY=80;const currentY=startY-(startY-endY)*progress;const sway=Math.sin(progress*Math.PI*3)*3;const stemD='M100 '+startY+' C'+(100+sway)+' '+(startY-(startY-currentY)*.3)+' '+(100-sway)+' '+(startY-(startY-currentY)*.6)+' 100 '+currentY;stem.setAttribute('d',stemD);const leafThresholds=[.15,.3,.5,.7,.85];leaves.forEach(function(leaf,i){if(progress>=leafThresholds[i]){leaf.setAttribute('opacity','1')}else{leaf.setAttribute('opacity','0')}});if(progress>=.9){face.setAttribute('opacity','1')}else{face.setAttribute('opacity','0')}}
 
 function showXpPopup(xp){const el=document.createElement('div');el.className='xp-popup';el.textContent='+'+xp+' XP';document.body.appendChild(el);setTimeout(function(){el.remove()},1600)}
 
