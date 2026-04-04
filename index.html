@@ -282,11 +282,11 @@ body.fullscreen .timer-card{max-width:420px}
 #focus-plant{width:200px;height:240px;margin:0 auto;display:block}
 #focus-plant .pot{fill:url(#potGrad)}
 #focus-plant .soil{fill:#3d2b1f}
-#focus-plant .stem{stroke:url(#stemGrad);stroke-width:5;stroke-linecap:round;transition:d .8s cubic-bezier(.4,0,.2,1)}
-#focus-plant .leaf{fill:url(#leafGrad);transition:opacity .6s ease}
+#focus-plant .stem{stroke:url(#stemGrad);stroke-width:5;stroke-linecap:round}
+#focus-plant .leaf{fill:url(#leafGrad)}
 #focus-plant .face{transition:opacity .6s ease}
 #focus-plant .eye{fill:#c8e6c9}
-#focus-plant .mouth{fill:none;stroke:#c8e6c9;stroke-width:2;stroke-linecap:round;transition:d .4s ease}
+#focus-plant .mouth{fill:none;stroke:#c8e6c9;stroke-width:2;stroke-linecap:round}
 #focus-plant .glow{fill:url(#glowGrad);opacity:.1;transition:opacity .6s ease}
 #focus-plant.sad .mouth{d:path("M92 148 Q100 144 108 148")}
 #focus-plant.sad .eye{transform:translateY(1px)}
@@ -1012,7 +1012,7 @@ function setMode(m){S.mode=m;S.running=false;clearInterval(S.interval);const mn=
 function startTimer(){if(S.running){pauseTimer();return}setPlant(false);S.running=true;S.interval=setInterval(()=>{if(S.sec<=0){clearInterval(S.interval);S.running=false;complete();return}S.sec--;renderTimer()},1000);renderTimer()}
 function pauseTimer(){S.running=false;clearInterval(S.interval);renderTimer()}
 function resetTimer(){S.running=false;clearInterval(S.interval);S.sec=S.total;renderTimer()}
-function skipSession(){S.running=false;clearInterval(S.interval);S.sec=0;renderTimer();setPlant(true);complete(true)}
+function skipSession(){S.running=false;clearInterval(S.interval);S.skipped++;setPlant(true);const prevMode=S.mode;S.cur++;if(S.cur>S.cycle){S.cur=1;setMode('long');if(S.autoBreak)startTimer()}else{if(prevMode==='focus'){setMode('short');if(S.autoBreak)startTimer()}else{setMode('focus');if(S.autoFocus)startTimer()}}updateStats();save()}
 
 function score(min){const ta=S.done+S.skipped||1;const eff=(S.done/ta)*100;const sb=S.streak*1.2;const adh=Math.min(100,S.dailyTarget>0?(S.todayMins/S.dailyTarget)*100:0);const raw=50+min*1.1+eff*.25+sb+adh*.15;return Math.max(50,Math.min(99,Math.round(raw)))}
 
@@ -1022,7 +1022,7 @@ function updateStreak(){const tk=dk(new Date());if(!S.lastDate)S.streak=1;else{c
 
 function checkAchievements(){const newUnlocks=[];ACHIEVEMENTS.forEach(a=>{if(!S.achievements.includes(a.id)&&a.check(S)){S.achievements.push(a.id);S.xp+=a.xp;GM.xp+=a.xp;newUnlocks.push(a)}});if(newUnlocks.length){newUnlocks.forEach(a=>{toast('🏆 Achievement: '+a.name+' (+'+a.xp+' XP)')});confetti();renderAchievements();save()}}
 
-function complete(skipped){anchors();if(S.mode==='focus'){const es=Math.max(0,S.total-S.sec);const em=Math.max(1,Math.round(es/60));if(!skipped){S.done++;S.totalSessions++;ST.sessions=S.done;S.totalSec+=es;S.todayMins+=em;ST.mins=Math.floor(S.totalSec/60);const sc=Math.round(score(em));const xp=sc*2;GM.xp+=xp;S.xp+=xp;setPlant(false);const di=(new Date().getDay()+6)%7;S.week[di]+=em;S.memory.unshift({title:S.objective||'Untitled',sc:sc,dur:em,ts:new Date(),note:S.objective||'No objective'});S.sessionHistory.unshift({sc:sc,dur:em,xp:xp,streak:S.streak,level:lvl(GM.xp),ts:new Date()});renderMemory();showOv(sc,xp,em);notify(sc,xp);tone(880,220);showXpPopup(xp);updatePersonalBest(em,sc);saveHeatmap();checkAchievements();checkDailyChallenges()}else{S.skipped++;setPlant(true)}S.cur++;if(S.cur>S.cycle){S.cur=1;setMode('long');if(S.autoBreak)startTimer()}else{if(S.mode==='focus'){setMode('short');if(S.autoBreak)startTimer()}else{setMode('focus');if(S.autoFocus)startTimer()}}updateStats();save()}}
+function complete(skipped){anchors();if(S.mode==='focus'){const es=Math.max(0,S.total-S.sec);const em=Math.max(1,Math.round(es/60));if(!skipped){S.done++;S.totalSessions++;ST.sessions=S.done;S.totalSec+=es;S.todayMins+=em;ST.mins=Math.floor(S.totalSec/60);const sc=Math.round(score(em));const xp=sc*2;GM.xp+=xp;S.xp+=xp;setPlant(false);const di=(new Date().getDay()+6)%7;S.week[di]+=em;S.memory.unshift({title:S.objective||'Untitled',sc:sc,dur:em,ts:new Date(),note:S.objective||'No objective'});S.sessionHistory.unshift({sc:sc,dur:em,xp:xp,streak:S.streak,level:lvl(GM.xp),ts:new Date()});renderMemory();showOv(sc,xp,em);notify(sc,xp);tone(880,220);showXpPopup(xp);updatePersonalBest(em,sc);saveHeatmap();checkAchievements();checkDailyChallenges()}S.cur++;if(S.cur>S.cycle){S.cur=1;setMode('long');if(S.autoBreak)startTimer()}else{if(S.mode==='focus'){setMode('short');if(S.autoBreak)startTimer()}else{setMode('focus');if(S.autoFocus)startTimer()}}updateStats();save()}}
 
 function renderRituals(){const l=document.getElementById('ritualList');l.innerHTML='';S.rituals.forEach(function(r,i){const item=document.createElement('label');item.className='checklist-item';item.innerHTML='<input type="checkbox" '+(r.d?'checked':'')+'><span>'+r.l+'</span>';item.querySelector('input').onchange=function(e){S.rituals[i].d=e.target.checked;save()};l.appendChild(item)})}
 
@@ -1107,7 +1107,7 @@ function shareInstagram(){copyShareText();toast('Text copied! Open Instagram and
 
 function copyShareText(){var text=getShareText();if(navigator.clipboard){navigator.clipboard.writeText(text).then(function(){toast('Copied! Paste on WhatsApp/Instagram 📋')}).catch(function(){prompt('Copy this:',text)})}else{prompt('Copy this:',text)}}
 
-function growPlant(){const stem=document.getElementById('plantStem');const leaves=document.querySelectorAll('#plantLeaves .leaf');const face=document.getElementById('plantFace');if(!stem||!S.running||S.mode!=='focus')return;const elapsed=S.total-S.sec;const maxTime=S.total;const progress=Math.min(1,elapsed/maxTime);const startY=170;const endY=80;const currentY=startY-(startY-endY)*progress;const sway=Math.sin(progress*Math.PI*3)*3;const stemD='M100 '+startY+' C'+(100+sway)+' '+(startY-(startY-currentY)*.3)+' '+(100-sway)+' '+(startY-(startY-currentY)*.6)+' 100 '+currentY;stem.setAttribute('d',stemD);const leafThresholds=[.15,.3,.5,.7,.85];leaves.forEach(function(leaf,i){if(progress>=leafThresholds[i]){leaf.setAttribute('opacity','1')}else{leaf.setAttribute('opacity','0')}});if(progress>=.9){face.setAttribute('opacity','1')}else{face.setAttribute('opacity','0')}}
+function growPlant(){const stem=document.getElementById('plantStem');const leaves=document.querySelectorAll('#plantLeaves .leaf');const face=document.getElementById('plantFace');if(!stem)return;if(!S.running||S.mode!=='focus'){return}const elapsed=S.total-S.sec;const maxTime=S.total;const progress=Math.min(1,elapsed/maxTime);const startY=170;const endY=80;const currentY=startY-(startY-endY)*progress;const sway=Math.sin(progress*Math.PI*4)*4;const midY1=startY-(startY-currentY)*0.33;const midY2=startY-(startY-currentY)*0.66;stem.setAttribute('d','M100 '+startY+' C'+(100+sway)+' '+midY1+', '+(100-sway)+' '+midY2+', 100 '+currentY);const leafThresholds=[0.1,0.25,0.45,0.65,0.85];leaves.forEach(function(leaf,i){if(progress>=leafThresholds[i]){leaf.style.opacity='1'}else{leaf.style.opacity='0'}});if(progress>=0.9){face.style.opacity='1'}else{face.style.opacity='0'}}
 
 function showXpPopup(xp){const el=document.createElement('div');el.className='xp-popup';el.textContent='+'+xp+' XP';document.body.appendChild(el);setTimeout(function(){el.remove()},1600)}
 
@@ -1371,7 +1371,7 @@ function spawnParticles(){const c=document.getElementById('particles');if(!c)ret
 load();GM={xp:S.xp||0,streak:S.streak||1};
 anchors();ST.sessions=S.done;ST.mins=Math.floor(S.totalSec/60);ST.tasks=S.tasks.filter(function(t){return t.d}).length;
 S.total=mins(S.mode)*60;if(!S.sec||S.sec>S.total)S.sec=S.total;
-renderAll();setPlant(false);
+renderAll();setPlant(false);growPlant();
 renderDailyQuote();
 renderGreeting();
 if(S.autoResume&&S.sec>0&&S.sec<S.total)startTimer();
