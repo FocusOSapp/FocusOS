@@ -1109,6 +1109,8 @@ function copyShareText(){var text=getShareText();if(navigator.clipboard){navigat
 
 function growPlant(){const stem=document.getElementById('plantStem');const leaves=document.querySelectorAll('#plantLeaves .leaf');const face=document.getElementById('plantFace');if(!stem)return;if(!S.running||S.mode!=='focus'){return}const elapsed=S.total-S.sec;const maxTime=S.total;const progress=Math.min(1,elapsed/maxTime);const startY=170;const endY=80;const currentY=startY-(startY-endY)*progress;const sway=Math.sin(progress*Math.PI*4)*4;const midY1=startY-(startY-currentY)*0.33;const midY2=startY-(startY-currentY)*0.66;stem.setAttribute('d','M100 '+startY+' C'+(100+sway)+' '+midY1+', '+(100-sway)+' '+midY2+', 100 '+currentY);const leafThresholds=[0.1,0.25,0.45,0.65,0.85];leaves.forEach(function(leaf,i){if(progress>=leafThresholds[i]){leaf.style.opacity='1'}else{leaf.style.opacity='0'}});if(progress>=0.9){face.style.opacity='1'}else{face.style.opacity='0'}}
 
+function animatePlantOnLoad(){const stem=document.getElementById('plantStem');const leaves=document.querySelectorAll('#plantLeaves .leaf');const face=document.getElementById('plantFace');if(!stem)return;const startY=170;const endY=80;const duration=3000;const startTime=Date.now();function step(){const elapsed=Date.now()-startTime;const progress=Math.min(1,elapsed/duration);const currentY=startY-(startY-endY)*progress;const sway=Math.sin(progress*Math.PI*4)*4;const midY1=startY-(startY-currentY)*0.33;const midY2=startY-(startY-currentY)*0.66;stem.setAttribute('d','M100 '+startY+' C'+(100+sway)+' '+midY1+', '+(100-sway)+' '+midY2+', 100 '+currentY);const leafThresholds=[0.1,0.25,0.45,0.65,0.85];leaves.forEach(function(leaf,i){if(progress>=leafThresholds[i]){leaf.style.opacity='1'}else{leaf.style.opacity='0'}});if(progress>=0.9){face.style.opacity='1'}else{face.style.opacity='0'};if(progress<1){requestAnimationFrame(step)}}requestAnimationFrame(step)}
+
 function showXpPopup(xp){const el=document.createElement('div');el.className='xp-popup';el.textContent='+'+xp+' XP';document.body.appendChild(el);setTimeout(function(){el.remove()},1600)}
 
 function showStreakFire(){const el=document.createElement('div');el.className='streak-fire';el.textContent='🔥';document.body.appendChild(el);setTimeout(function(){el.remove()},2100)}
@@ -1371,7 +1373,7 @@ function spawnParticles(){const c=document.getElementById('particles');if(!c)ret
 load();GM={xp:S.xp||0,streak:S.streak||1};
 anchors();ST.sessions=S.done;ST.mins=Math.floor(S.totalSec/60);ST.tasks=S.tasks.filter(function(t){return t.d}).length;
 S.total=mins(S.mode)*60;if(!S.sec||S.sec>S.total)S.sec=S.total;
-renderAll();setPlant(false);growPlant();
+renderAll();setPlant(false);animatePlantOnLoad();
 renderDailyQuote();
 renderGreeting();
 if(S.autoResume&&S.sec>0&&S.sec<S.total)startTimer();
