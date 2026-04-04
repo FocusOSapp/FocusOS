@@ -1012,7 +1012,7 @@ function setMode(m){S.mode=m;S.running=false;clearInterval(S.interval);const mn=
 function startTimer(){if(S.running){pauseTimer();return}setPlant(false);S.running=true;S.interval=setInterval(()=>{if(S.sec<=0){clearInterval(S.interval);S.running=false;complete();return}S.sec--;renderTimer()},1000);renderTimer()}
 function pauseTimer(){S.running=false;clearInterval(S.interval);renderTimer()}
 function resetTimer(){S.running=false;clearInterval(S.interval);S.sec=S.total;renderTimer()}
-function skipSession(){S.running=false;clearInterval(S.interval);S.skipped++;setPlant(true);const prevMode=S.mode;S.cur++;if(S.cur>S.cycle){S.cur=1;setMode('long');if(S.autoBreak)startTimer()}else{if(prevMode==='focus'){setMode('short');if(S.autoBreak)startTimer()}else{setMode('focus');if(S.autoFocus)startTimer()}}updateStats();save()}
+function skipSession(){S.running=false;clearInterval(S.interval);S.skipped++;setPlant(true);if(S.mode==='focus'){S.cur++;if(S.cur>S.cycle){S.cur=1;setMode('long')}else{setMode('short')}}else if(S.mode==='short'){setMode('focus')}else{S.cur=1;setMode('focus')}updateStats();save()}
 
 function score(min){const ta=S.done+S.skipped||1;const eff=(S.done/ta)*100;const sb=S.streak*1.2;const adh=Math.min(100,S.dailyTarget>0?(S.todayMins/S.dailyTarget)*100:0);const raw=50+min*1.1+eff*.25+sb+adh*.15;return Math.max(50,Math.min(99,Math.round(raw)))}
 
