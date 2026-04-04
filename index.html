@@ -556,6 +556,16 @@ body.fullscreen .timer-card{max-width:420px}
           <div id="memoryPreview" style="font-size:13px;color:var(--text2)">No sessions yet.</div>
           <p style="font-size:12px;color:var(--text3);margin-top:6px">Completed sessions are remembered automatically.</p>
         </div>
+        <div class="card lift" id="homeShareCard" style="display:none">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><h4 style="font-size:14px">📤 Share Session</h4><span style="font-size:10px;color:var(--text3)">Tap to copy</span></div>
+          <div class="share-card" id="homeShareCardInner" style="max-width:100%;padding:16px;cursor:pointer">
+            <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:6px">FocusOS Session</div>
+            <div class="score" id="homeShareScore" style="font-size:36px">90</div>
+            <div class="meta" id="homeShareMeta">25 min focused</div>
+            <div style="display:flex;justify-content:center;gap:10px;margin-top:6px;font-size:10px;color:var(--text2)"><span id="homeShareStreak">🔥 3 day</span><span id="homeShareLevel">📊 Lv 3</span></div>
+            <div class="brand" style="margin-top:10px">FocusOS</div>
+          </div>
+        </div>
         <div class="card lift">
           <h4 style="font-size:14px;margin-bottom:10px">Year Progress</h4>
           <div class="year-ring">
@@ -772,6 +782,20 @@ body.fullscreen .timer-card{max-width:420px}
       <div class="focus-score" id="overlayScore">90</div>
       <div style="font-size:14px;color:var(--text2)" id="overlayMsg">Deep work logged.</div>
       <div style="display:flex;justify-content:space-between;font-size:13px"><span id="overlayTime">25m</span><span id="overlayXp">+120 XP</span></div>
+      <div id="overlayShareCard" style="display:none;margin-top:12px">
+        <div class="share-card" id="overlayShareCardInner" style="max-width:100%">
+          <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--text3);margin-bottom:8px">FocusOS Session</div>
+          <div class="score" id="shareCardScore" style="font-size:48px">90</div>
+          <div class="meta" id="shareCardMeta">25 min focused</div>
+          <div style="display:flex;justify-content:center;gap:12px;margin-top:8px;font-size:11px;color:var(--text2)"><span id="shareCardStreak">🔥 3 day streak</span><span id="shareCardLevel">📊 Lv 3</span></div>
+          <div class="brand">FocusOS — Deep Work OS</div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button class="btn btn-primary small" id="shareWhatsAppBtn" style="flex:1;justify-content:center;font-size:12px">💬 WhatsApp</button>
+          <button class="btn btn-outline small" id="shareInstagramBtn" style="flex:1;justify-content:center;font-size:12px">📸 Instagram</button>
+          <button class="btn btn-outline small" id="shareCopyBtn" style="flex:1;justify-content:center;font-size:12px">📋 Copy</button>
+        </div>
+      </div>
       <div style="display:flex;gap:10px;margin-top:10px">
         <button class="btn btn-primary" id="overlayContinue" style="flex:1;justify-content:center">Continue Flow</button>
         <button class="btn btn-outline" id="overlayClose" style="flex:1;justify-content:center">Close</button>
@@ -1038,7 +1062,7 @@ function renderPal(){const r=document.getElementById('paletteRow');r.innerHTML='
 
 function sync(){document.getElementById('valFocus').textContent=S.focus;document.getElementById('valShort').textContent=S.short;document.getElementById('valLong').textContent=S.long;document.getElementById('valCycle').textContent=S.cycle;document.getElementById('valDaily').textContent=S.dailyTarget;S.total=mins(S.mode)*60;S.sec=Math.min(S.sec,S.total);renderTimer();renderDots()}
 
-function showOv(sc,xp,min){document.getElementById('overlayScore').textContent=sc;document.getElementById('overlayTime').textContent=min+'m focused';document.getElementById('overlayXp').textContent='+'+xp+' XP';const l=lvl(GM.xp);document.getElementById('overlayMsg').textContent='Scored '+sc+'. Level '+l+'. '+(S.streak>1?S.streak+'-day chain. ':'')+'Showing up is momentum.';document.getElementById('overlay').classList.add('show');confetti()}
+function showOv(sc,xp,min){document.getElementById('overlayScore').textContent=sc;document.getElementById('overlayTime').textContent=min+'m focused';document.getElementById('overlayXp').textContent='+'+xp+' XP';const l=lvl(GM.xp);document.getElementById('overlayMsg').textContent='Scored '+sc+'. Level '+l+'. '+(S.streak>1?S.streak+'-day chain. ':'')+'Showing up is momentum.';document.getElementById('overlay').classList.add('show');confetti();showSessionShare(sc,xp,min,l)}
 
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2500)}
 
@@ -1068,6 +1092,20 @@ function setPage(p){if(S.lock&&p!==page){toast('Locked — finish current block'
 function renderLvl(){var level=getFocusLevel();var l=lvl(GM.xp);var xpPct=(GM.xp||0)%100;document.getElementById('xpPill').textContent=level.icon+' Lv '+l;var fill=document.getElementById('xpBarFill');var label=document.getElementById('xpLabel');if(fill)fill.style.width=xpPct+'%';if(label)label.textContent=xpPct+' / 100 XP to Level '+(l+1)}
 
 function setPlant(sad){const p=document.getElementById('focus-plant');if(!p)return;p.classList.remove('sad','happy');if(sad){p.classList.add('sad')}else{p.classList.add('happy')}}
+
+function showSessionShare(sc,xp,min,lvl){const card=document.getElementById('overlayShareCard');if(!card)return;card.style.display='block';document.getElementById('shareCardScore').textContent=sc;document.getElementById('shareCardMeta').textContent=min+' min focused · '+xp+' XP earned';document.getElementById('shareCardStreak').textContent='🔥 '+S.streak+' day streak';document.getElementById('shareCardLevel').textContent='📊 Lv '+lvl;updateHomeShareCard(sc,xp,min,lvl)}
+
+function updateHomeShareCard(sc,xp,min,lvl){const card=document.getElementById('homeShareCard');if(!card)return;card.style.display='block';document.getElementById('homeShareScore').textContent=sc;document.getElementById('homeShareMeta').textContent=min+' min focused · '+xp+' XP';document.getElementById('homeShareStreak').textContent='🔥 '+S.streak+' day';document.getElementById('homeShareLevel').textContent='📊 Lv '+lvl}
+
+function getShareText(){var sc=document.getElementById('shareCardScore').textContent;var meta=document.getElementById('shareCardMeta').textContent;var streak=document.getElementById('shareCardStreak').textContent;var level=document.getElementById('shareCardLevel').textContent;return '🎯 FocusOS Session Complete!\n\nScore: '+sc+'\n'+meta+'\n'+streak+' · '+level+'\n\nKill distractions. Enter deep work.\n🔗 focusos.app'}
+
+function shareSession(){var text=getShareText();if(navigator.share){navigator.share({title:'FocusOS Session',text:text}).catch(function(){shareWhatsApp()})}else{shareWhatsApp()}}
+
+function shareWhatsApp(){var text=encodeURIComponent(getShareText());window.open('https://wa.me/?text='+text,'_blank')}
+
+function shareInstagram(){copyShareText();toast('Text copied! Open Instagram and paste 📸')}
+
+function copyShareText(){var text=getShareText();if(navigator.clipboard){navigator.clipboard.writeText(text).then(function(){toast('Copied! Paste on WhatsApp/Instagram 📋')}).catch(function(){prompt('Copy this:',text)})}else{prompt('Copy this:',text)}}
 
 function growPlant(){const stem=document.getElementById('plantStem');const leaves=document.querySelectorAll('#plantLeaves .leaf');const face=document.getElementById('plantFace');if(!stem||!S.running||S.mode!=='focus')return;const elapsed=S.total-S.sec;const maxTime=S.total;const progress=Math.min(1,elapsed/maxTime);const startY=170;const endY=80;const currentY=startY-(startY-endY)*progress;const sway=Math.sin(progress*Math.PI*3)*3;const stemD='M100 '+startY+' C'+(100+sway)+' '+(startY-(startY-currentY)*.3)+' '+(100-sway)+' '+(startY-(startY-currentY)*.6)+' 100 '+currentY;stem.setAttribute('d',stemD);const leafThresholds=[.15,.3,.5,.7,.85];leaves.forEach(function(leaf,i){if(progress>=leafThresholds[i]){leaf.setAttribute('opacity','1')}else{leaf.setAttribute('opacity','0')}});if(progress>=.9){face.setAttribute('opacity','1')}else{face.setAttribute('opacity','0')}}
 
@@ -1131,7 +1169,11 @@ document.getElementById('monkBtn').onclick=toggleFS;
 document.getElementById('lockPill').onclick=function(){S.lock=!S.lock;document.getElementById('lockPill').textContent=S.lock?'Locked':'Lock';save();toast(S.lock?'Lock on':'Lock off')};
 document.getElementById('saveObjective').onclick=function(){S.objective=document.getElementById('objectiveInput').value.trim();toast('Objective saved');save()};
 document.getElementById('overlayContinue').onclick=function(){document.getElementById('overlay').classList.remove('show');setMode('focus')};
-document.getElementById('overlayClose').onclick=function(){document.getElementById('overlay').classList.remove('show')};
+document.getElementById('overlayClose').onclick=function(){document.getElementById('overlay').classList.remove('show');dismissShareCard()};
+document.getElementById('shareWhatsAppBtn').onclick=shareWhatsApp;
+document.getElementById('shareInstagramBtn').onclick=shareInstagram;
+document.getElementById('shareCopyBtn').onclick=copyShareText;
+document.getElementById('homeShareCardInner').onclick=shareSession;
 document.getElementById('taskAdd').onclick=addTask;
 document.getElementById('taskInput').addEventListener('keyup',function(e){if(e.key==='Enter')addTask()});
 document.getElementById('clearTasks').onclick=function(){S.tasks=S.tasks.filter(function(t){return !t.d});renderTasks();save();toast('Cleared')};
