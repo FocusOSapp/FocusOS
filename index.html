@@ -253,16 +253,62 @@ body.fullscreen .timer-card{max-width:420px}
 #blockOverlay .dismiss:hover{background:var(--accent);color:#030308}
 
 /* Ambient Panel */
-#ambientPanel{position:fixed;bottom:20px;right:20px;background:rgba(10,10,16,.88);border:1px solid var(--border);border-radius:16px;padding:14px;z-index:500;backdrop-filter:blur(18px);display:flex;flex-direction:column;gap:10px;min-width:200px;transition:var(--transition)}
+#ambientPanel{position:fixed;bottom:20px;right:20px;background:rgba(8,8,14,.92);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:16px;z-index:500;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);display:flex;flex-direction:column;gap:12px;min-width:220px;transition:var(--transition);box-shadow:0 16px 48px rgba(0,0,0,.4)}
 #ambientPanel.hidden{display:none !important}
 #ambientPanel .panel-header{display:flex;justify-content:space-between;align-items:center}
-#ambientPanel .panel-header span{font-size:11px;font-weight:700;color:var(--text);letter-spacing:1.5px;text-transform:uppercase}
-#ambientPanel .close-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;padding:2px 8px;border-radius:8px;transition:var(--transition)}
+#ambientPanel .panel-header span{font-size:10px;font-weight:700;color:var(--text);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+#ambientPanel .panel-header .sound-wave{display:flex;gap:2px;align-items:flex-end;height:12px}
+#ambientPanel .panel-header .sound-wave span{width:2px;background:var(--accent);border-radius:2px;animation:soundBar 1s ease-in-out infinite}
+#ambientPanel .panel-header .sound-wave span:nth-child(1){height:4px;animation-delay:0s}
+#ambientPanel .panel-header .sound-wave span:nth-child(2){height:8px;animation-delay:.15s}
+#ambientPanel .panel-header .sound-wave span:nth-child(3){height:6px;animation-delay:.3s}
+#ambientPanel .panel-header .sound-wave span:nth-child(4){height:10px;animation-delay:.45s}
+#ambientPanel .panel-header .sound-wave span:nth-child(5){height:3px;animation-delay:.6s}
+#ambientPanel .panel-header .sound-wave.paused span{animation:none;height:2px !important}
+@keyframes soundBar{0%,100%{height:3px}50%{height:12px}}
+#ambientPanel .close-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:4px 8px;border-radius:8px;transition:var(--transition);line-height:1}
 #ambientPanel .close-btn:hover{color:var(--text);background:rgba(255,255,255,.06)}
-#ambientPanel .types{display:flex;gap:6px}
-#ambientPanel .type-btn{flex:1;padding:8px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;transition:var(--transition);font-family:var(--font);text-transform:capitalize}
-#ambientPanel .type-btn.active{background:var(--accent);color:#030308;border-color:var(--accent)}
-#ambientPanel input[type=range]{width:100%;accent-color:var(--accent);height:4px}
+#ambientPanel .types{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+#ambientPanel .type-btn{padding:10px 8px;border-radius:12px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02);color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;transition:var(--transition);font-family:var(--font);text-transform:capitalize;display:flex;flex-direction:column;align-items:center;gap:4px}
+#ambientPanel .type-btn .type-icon{font-size:18px}
+#ambientPanel .type-btn.active{background:rgba(125,214,255,.1);color:var(--accent);border-color:rgba(125,214,255,.2);box-shadow:0 0 16px rgba(125,214,255,.1)}
+#ambientPanel .vol-row{display:flex;align-items:center;gap:8px}
+#ambientPanel .vol-row span{font-size:10px;color:var(--text3)}
+#ambientPanel input[type=range]{flex:1;accent-color:var(--accent);height:4px;border-radius:4px}
+#ambientReopen{position:fixed;bottom:20px;right:20px;z-index:499}
+
+/* Plant */
+.plant-wrap{background:transparent;border:none;box-shadow:none;backdrop-filter:none}
+#focus-plant{width:200px;height:240px;margin:0 auto;display:block}
+#focus-plant .pot{fill:url(#potGrad)}
+#focus-plant .soil{fill:#3d2b1f}
+#focus-plant .stem{stroke:url(#stemGrad);stroke-width:5;stroke-linecap:round;stroke-dasharray:120;stroke-dashoffset:120;animation:stemGrow 2s ease-out forwards;transform-origin:100px 170px}
+#focus-plant .leaf{fill:url(#leafGrad);opacity:0;animation:leafSprout 1.2s ease-out forwards;transform-origin:center bottom}
+#focus-plant .leaf.l2{animation-delay:.2s}
+#focus-plant .leaf.l3{animation-delay:.35s}
+#focus-plant .leaf.l4{animation-delay:.5s}
+#focus-plant .leaf.l5{animation-delay:.65s}
+#focus-plant .face{animation:faceAppear .8s ease-out forwards 1s;opacity:0}
+#focus-plant .eye{fill:#c8e6c9}
+#focus-plant .mouth{fill:none;stroke:#c8e6c9;stroke-width:2;stroke-linecap:round}
+#focus-plant .glow{fill:url(#glowGrad);opacity:.1;animation:glowPulse 3s ease-in-out infinite}
+#focus-plant.sad .mouth{d:path("M92 148 Q100 144 108 148")}
+#focus-plant.sad .eye{transform:translateY(1px)}
+#focus-plant.sad .glow{opacity:.03;animation:none}
+#focus-plant.sad .leaf{animation:leafDroop 4s ease-in-out infinite}
+#focus-plant.happy .mouth{d:path("M92 146 Q100 154 108 146")}
+#focus-plant.happy .glow{opacity:.18;animation:glowPulse 2s ease-in-out infinite}
+#focus-plant.happy .leaf{animation:leafDance 2s ease-in-out infinite}
+#focus-plant.happy .leaf.l2{animation-delay:.1s}
+#focus-plant.happy .leaf.l3{animation-delay:.2s}
+#focus-plant.happy .leaf.l4{animation-delay:.3s}
+#focus-plant.happy .leaf.l5{animation-delay:.4s}
+@keyframes stemGrow{to{stroke-dashoffset:0}}
+@keyframes leafSprout{from{opacity:0;transform:scale(0) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes leafDroop{0%,100%{transform:translateY(2px) rotate(2deg)}50%{transform:translateY(6px) rotate(5deg)}}
+@keyframes leafDance{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-3px) rotate(2deg)}}
+@keyframes faceAppear{to{opacity:1}}
+@keyframes glowPulse{0%,100%{opacity:.08}50%{opacity:.16}}
 
 /* Achievements */
 .achievements-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:14px}
@@ -368,21 +414,31 @@ body.fullscreen .timer-card{max-width:420px}
 @media(max-width:650px){
   nav{flex-direction:column;gap:10px;padding:12px 16px}
   .nav-tabs{width:100%;overflow-x:auto}
-  .nav-right{width:100%;justify-content:flex-start}
+  .nav-right{width:100%;justify-content:flex-start;gap:6px}
+  .nav-pill{padding:6px 10px;font-size:10px}
   .nav-tab{padding:8px 12px;font-size:11px}
   main{padding:18px 14px 100px}
   .controls{flex-direction:column}
   .btn{width:100%;justify-content:center}
   .circle-wrap{width:200px;height:200px}
   .timer-value{font-size:38px}
+  .timer-card{padding:28px 20px}
   .info-grid{grid-template-columns:1fr}
   .habit-table{grid-template-columns:120px repeat(31,26px)}
-  .timer-card{padding:28px 20px}
   .achievements-grid{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
   .mobile-nav{display:block}
   .side-stack{flex-direction:column}
   .side-stack > *{min-width:100%}
   .hero-grid{gap:16px}
+  #focus-plant{width:160px;height:200px}
+  .daily-quote{margin:0 0 16px;padding:12px 16px;font-size:13px}
+  .review-grid{grid-template-columns:repeat(2,1fr)}
+  .share-card{padding:20px}
+  .share-card .score{font-size:48px}
+  #ambientPanel{bottom:80px;right:12px;min-width:180px;padding:12px}
+  .community-stat .num{font-size:28px}
+  .stat-value{font-size:24px}
+  .score-val{font-size:32px}
 }
 </style>
 </head>
@@ -468,39 +524,33 @@ body.fullscreen .timer-card{max-width:420px}
           </div>
           <div class="card side-card lift">
             <div class="plant-wrap">
-              <svg id="focus-plant" viewBox="0 0 200 260" fill="none">
-                <style>
-                  .glow{fill:url(#glowGrad);opacity:.12;animation:glowP 4s ease-in-out infinite}
-                  .stem{stroke:url(#stemGrad);stroke-width:7;stroke-linecap:round;stroke-dasharray:160;stroke-dashoffset:160;animation:stemG 2.2s ease-out forwards;transform-origin:100px 190px}
-                  .leaf{fill:url(#leafGrad);opacity:0;animation:leafG 1.6s ease-out forwards;transform-origin:center bottom}
-                  .leaf.l2{animation-delay:.22s}.leaf.l3{animation-delay:.38s}.leaf.l4{animation-delay:.55s}.leaf.l5{animation-delay:.7s}
-                  .face{animation:faceF 1s ease-out forwards 1.2s;opacity:0;transform-origin:100px 155px}
-                  .eye{fill:#c8e6c9;transition:transform .3s ease}.mouth{fill:none;stroke:#c8e6c9;stroke-width:2.5;stroke-linecap:round;transition:d .3s ease}
-                  #focus-plant.sad .mouth{d:path("M92 158 Q100 153 108 158")}
-                  #focus-plant.sad .eye{transform:translateY(2px)}
-                  #focus-plant.sad .glow{opacity:.04;animation:none}
-                  #focus-plant.sad .leaf{animation:leafDroop 3s ease-in-out infinite}
-                  @keyframes glowP{0%,100%{opacity:.1}50%{opacity:.18}}
-                  @keyframes stemG{to{stroke-dashoffset:0}}
-                  @keyframes leafG{from{opacity:0;transform:scale(.2) translateY(16px)}to{opacity:1;transform:scale(1) translateY(0)}}
-                  @keyframes leafDroop{0%,100%{transform:translateY(2px) rotate(3deg)}50%{transform:translateY(8px) rotate(7deg)}}
-                  @keyframes faceF{to{opacity:1}}
-                </style>
+              <svg id="focus-plant" viewBox="0 0 200 240" fill="none">
                 <defs>
-                  <radialGradient id="glowGrad" cx="50%" cy="60%" r="60%"><stop stop-color="#6fdc7a" stop-opacity=".25"/><stop stop-color="transparent" offset="1"/></radialGradient>
-                  <linearGradient id="stemGrad" x1="100" y1="80" x2="100" y2="200"><stop stop-color="#78d97a"/><stop stop-color="#4fa86d" offset="1"/></linearGradient>
+                  <radialGradient id="glowGrad" cx="50%" cy="60%" r="50%"><stop stop-color="#6fdc7a" stop-opacity=".2"/><stop stop-color="transparent" offset="1"/></radialGradient>
+                  <linearGradient id="stemGrad" x1="100" y1="70" x2="100" y2="170"><stop stop-color="#78d97a"/><stop stop-color="#4fa86d" offset="1"/></linearGradient>
                   <linearGradient id="leafGrad" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8ee59a"/><stop stop-color="#4cae6f" offset="1"/></linearGradient>
+                  <linearGradient id="potGrad" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#a0785a"/><stop stop-color="#7a5c42" offset="1"/></linearGradient>
                 </defs>
-                <ellipse class="glow" cx="100" cy="195" rx="58" ry="26"/>
-                <path class="stem" d="M100 200 C100 178 99 152 101 132 C103 116 104 96 100 86"/>
-                <path class="leaf l1" d="M100 135 C82 126 66 112 60 98 C76 102 92 114 100 135"/>
-                <path class="leaf l2" d="M102 135 C120 126 136 112 142 98 C126 102 110 114 102 135"/>
-                <path class="leaf l3" d="M94 118 C82 106 74 92 72 78 C86 86 98 98 94 118"/>
-                <path class="leaf l4" d="M106 118 C118 106 126 92 128 78 C114 86 102 98 106 118"/>
-                <path class="leaf l5" d="M100 108 C96 94 94 82 94 70 C104 80 110 94 100 108"/>
+                <!-- Glow -->
+                <ellipse class="glow" cx="100" cy="170" rx="50" ry="20"/>
+                <!-- Pot -->
+                <path class="pot" d="M65 175 L70 210 L130 210 L135 175 Z"/>
+                <rect class="pot" x="60" y="168" width="80" height="10" rx="3"/>
+                <!-- Soil -->
+                <ellipse class="soil" cx="100" cy="172" rx="35" ry="5"/>
+                <!-- Stem -->
+                <path class="stem" d="M100 170 C100 155 99 140 100 125 C101 110 103 95 100 80"/>
+                <!-- Leaves -->
+                <path class="leaf l1" d="M100 140 C85 132 72 120 66 108 C80 112 92 122 100 140"/>
+                <path class="leaf l2" d="M100 140 C115 132 128 120 134 108 C120 112 108 122 100 140"/>
+                <path class="leaf l3" d="M94 125 C83 115 75 102 73 90 C85 96 96 106 94 125"/>
+                <path class="leaf l4" d="M106 125 C117 115 125 102 127 90 C115 96 104 106 106 125"/>
+                <path class="leaf l5" d="M100 112 C96 100 94 88 94 76 C102 84 108 96 100 112"/>
+                <!-- Face -->
                 <g class="face">
-                  <circle class="eye" cx="92" cy="155" r="3.5"/><circle class="eye" cx="108" cy="155" r="3.5"/>
-                  <path class="mouth" d="M92 160 Q100 166 108 160"/>
+                  <circle class="eye" cx="92" cy="142" r="3"/>
+                  <circle class="eye" cx="108" cy="142" r="3"/>
+                  <path class="mouth" d="M92 148 Q100 154 108 148"/>
                 </g>
               </svg>
             </div>
@@ -771,17 +821,21 @@ body.fullscreen .timer-card{max-width:420px}
 
 <div id="ambientPanel">
   <div class="panel-header">
-    <span>Ambient</span>
+    <span>Ambient <span class="sound-wave"><span></span><span></span><span></span><span></span><span></span></span></span>
     <button class="close-btn" id="ambientClose" title="Hide ambient panel">×</button>
   </div>
   <div class="types">
-    <button class="type-btn" data-type="rain">Rain</button>
-    <button class="type-btn" data-type="thunder">Thunder</button>
-    <button class="type-btn" data-type="forest">Forest</button>
-    <button class="type-btn" data-type="white">White</button>
+    <button class="type-btn" data-type="rain"><span class="type-icon">🌧️</span>Rain</button>
+    <button class="type-btn" data-type="thunder"><span class="type-icon">⛈️</span>Thunder</button>
+    <button class="type-btn" data-type="forest"><span class="type-icon">🌲</span>Forest</button>
+    <button class="type-btn" data-type="white"><span class="type-icon">🌊</span>White</button>
   </div>
-  <input type="range" id="ambientVol" min="0" max="1" step="0.01" value="0.5">
-  <button class="btn small" id="ambientReopen" style="display:none;margin-top:4px;justify-content:center">Show Ambient</button>
+  <div class="vol-row">
+    <span>🔈</span>
+    <input type="range" id="ambientVol" min="0" max="1" step="0.01" value="0.5">
+    <span>🔊</span>
+  </div>
+  <button class="btn small" id="ambientReopen" style="display:none;justify-content:center">🎵 Show Ambient</button>
 </div>
 
 <script type="module">
@@ -1032,7 +1086,7 @@ function setPage(p){if(S.lock&&p!==page){toast('Locked — finish current block'
 
 function renderLvl(){var level=getFocusLevel();var l=lvl(GM.xp);var xpPct=(GM.xp||0)%100;document.getElementById('xpPill').textContent=level.icon+' Lv '+l;var fill=document.getElementById('xpBarFill');var label=document.getElementById('xpLabel');if(fill)fill.style.width=xpPct+'%';if(label)label.textContent=xpPct+' / 100 XP to Level '+(l+1)}
 
-function setPlant(sad){const p=document.getElementById('focus-plant');if(p)p.classList.toggle('sad',sad)}
+function setPlant(sad){const p=document.getElementById('focus-plant');if(!p)return;p.classList.remove('sad','happy');if(sad){p.classList.add('sad')}else{p.classList.add('happy')}}
 
 function showXpPopup(xp){const el=document.createElement('div');el.className='xp-popup';el.textContent='+'+xp+' XP';document.body.appendChild(el);setTimeout(function(){el.remove()},1600)}
 
@@ -1134,24 +1188,118 @@ function spawnParticles(){const c=document.getElementById('particles');if(!c)ret
 (function(){
   var K='focusos:ambient';
   var TYPES=['rain','thunder','forest','white'];
-  var ctx=null,src=null,gain=null,mode='rain',vol=0.5;
+  var ctx=null,sources=[],masterGain=null,mode='rain',vol=0.5,playing=false;
 
-  function ectx(){if(!ctx){ctx=new(window.AudioContext||window.webkitAudioContext)();gain=ctx.createGain();gain.gain.value=vol;gain.connect(ctx.destination)}return ctx}
+  function ectx(){
+    if(!ctx){
+      ctx=new(window.AudioContext||window.webkitAudioContext)();
+      masterGain=ctx.createGain();
+      masterGain.gain.value=vol;
+      masterGain.connect(ctx.destination);
+    }
+    return ctx;
+  }
 
-  function noise(sec){var sr=44100;var fc=sr*sec;var buf=ctx.createBuffer(1,fc,sr);var d=buf.getChannelData(0);for(var i=0;i<fc;i++)d[i]=(Math.random()*2-1)*.4;return buf}
+  function noise(sec,sr){
+    sr=sr||44100;
+    var fc=sr*sec;
+    var buf=ctx.createBuffer(2,fc,sr);
+    for(var ch=0;ch<2;ch++){
+      var d=buf.getChannelData(ch);
+      for(var i=0;i<fc;i++)d[i]=(Math.random()*2-1)*.5;
+    }
+    return buf;
+  }
 
-  function start(t){stop();ectx();gain.disconnect();gain.connect(ctx.destination);
-    var b=noise(t==='rain'?12:t==='thunder'?10:t==='forest'?8:6);
-    var s=ctx.createBufferSource();s.buffer=b;s.loop=true;
-    if(t==='rain'){var lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=5000;var hp=ctx.createBiquadFilter();hp.type='highpass';hp.frequency.value=800;var rv=ctx.createConvolver();var ir=ctx.createBuffer(2,44100,44100);for(var c=0;c<2;c++){var cd=ir.getChannelData(c);for(var i=0;i<44100;i++)cd[i]=(Math.random()*2-1)*Math.pow(1-i/44100,2)*.06}rv.buffer=ir;s.connect(lp);lp.connect(hp);hp.connect(rv);rv.connect(gain)}
-    else if(t==='thunder'){var lp2=ctx.createBiquadFilter();lp2.type='lowpass';lp2.frequency.value=800;var g2=ctx.createGain();g2.gain.value=1.5;s.connect(lp2);lp2.connect(g2);g2.connect(gain)}
-    else if(t==='forest'){var pk=ctx.createBiquadFilter();pk.type='peaking';pk.frequency.value=2000;pk.Q.value=.8;pk.gain.value=3;s.connect(pk);pk.connect(gain)}
-    else{var ls=ctx.createBiquadFilter();ls.type='lowshelf';ls.frequency.value=300;ls.gain.value=-4;s.connect(ls);ls.connect(gain)}
-    s.start(0);src=s;mode=t;saveAmbient()}
+  function impulseResponse(sec,decay){
+    var sr=ctx.sampleRate;
+    var len=sr*sec;
+    var buf=ctx.createBuffer(2,len,sr);
+    for(var ch=0;ch<2;ch++){
+      var d=buf.getChannelData(ch);
+      for(var i=0;i<len;i++){
+        d[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay);
+      }
+    }
+    return buf;
+  }
 
-  function stop(){if(src){try{src.stop(0)}catch(_){}}src=null}
+  function startRain(){
+    var buf=noise(8);
+    var s=ctx.createBufferSource();s.buffer=buf;s.loop=true;
+    var lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=4000;
+    var hp=ctx.createBiquadFilter();hp.type='highpass';hp.frequency.value=600;
+    var rv=ctx.createConvolver();rv.buffer=impulseResponse(2,2.5);
+    var wet=ctx.createGain();wet.gain.value=.3;
+    var dry=ctx.createGain();dry.gain.value=.7;
+    s.connect(lp);lp.connect(hp);
+    hp.connect(dry);dry.connect(masterGain);
+    hp.connect(rv);rv.connect(wet);wet.connect(masterGain);
+    s.start(0);sources.push(s);
+  }
 
-  function setVol(v){vol=v;if(gain)gain.gain.value=v;saveAmbient()}
+  function startThunder(){
+    var buf=noise(10);
+    var s=ctx.createBufferSource();s.buffer=buf;s.loop=true;
+    var lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=400;
+    var sub=ctx.createBiquadFilter();sub.type='lowshelf';sub.frequency.value=100;sub.gain.value=6;
+    var rv=ctx.createConvolver();rv.buffer=impulseResponse(4,1.5);
+    var wet=ctx.createGain();wet.gain.value=.5;
+    var dry=ctx.createGain();dry.gain.value=.5;
+    s.connect(lp);lp.connect(sub);
+    sub.connect(dry);dry.connect(masterGain);
+    sub.connect(rv);rv.connect(wet);wet.connect(masterGain);
+    s.start(0);sources.push(s);
+  }
+
+  function startForest(){
+    var buf1=noise(6);
+    var s1=ctx.createBufferSource();s1.buffer=buf1;s1.loop=true;
+    var bp1=ctx.createBiquadFilter();bp1.type='bandpass';bp1.frequency.value=3000;bp1.Q.value=.5;
+    var g1=ctx.createGain();g1.gain.value=.3;
+    s1.connect(bp1);bp1.connect(g1);g1.connect(masterGain);
+    s1.start(0);sources.push(s1);
+
+    var buf2=noise(4,22050);
+    var s2=ctx.createBufferSource();s2.buffer=buf2;s2.loop=true;
+    var bp2=ctx.createBiquadFilter();bp2.type='bandpass';bp2.frequency.value=5000;bp2.Q.value=2;
+    var lfo=ctx.createOscillator();lfo.frequency.value=.3;
+    var lfoGain=ctx.createGain();lfoGain.gain.value=800;
+    lfo.connect(lfoGain);lfoGain.connect(bp2.frequency);
+    var g2=ctx.createGain();g2.gain.value=.15;
+    s2.connect(bp2);bp2.connect(g2);g2.connect(masterGain);
+    s2.start(0);lfo.start(0);sources.push(s2);sources.push(lfo);
+  }
+
+  function startWhite(){
+    var buf=noise(4);
+    var s=ctx.createBufferSource();s.buffer=buf;s.loop=true;
+    var lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=8000;
+    var ls=ctx.createBiquadFilter();ls.type='lowshelf';ls.frequency.value=200;ls.gain.value=-3;
+    var hs=ctx.createBiquadFilter();hs.type='highshelf';hs.frequency.value=6000;hs.gain.value=-2;
+    s.connect(lp);lp.connect(ls);ls.connect(hs);hs.connect(masterGain);
+    s.start(0);sources.push(s);
+  }
+
+  function start(t){
+    stop();ectx();
+    if(t==='rain')startRain();
+    else if(t==='thunder')startThunder();
+    else if(t==='forest')startForest();
+    else startWhite();
+    mode=t;playing=true;saveAmbient();
+    var wave=document.querySelector('#ambientPanel .sound-wave');
+    if(wave)wave.classList.remove('paused');
+  }
+
+  function stop(){
+    sources.forEach(function(s){try{s.stop(0)}catch(_){}});
+    sources=[];playing=false;
+    var wave=document.querySelector('#ambientPanel .sound-wave');
+    if(wave)wave.classList.add('paused');
+  }
+
+  function setVol(v){vol=v;if(masterGain)masterGain.gain.value=v;saveAmbient()}
 
   function saveAmbient(){localStorage.setItem(K,JSON.stringify({type:mode,volume:vol}))}
 
@@ -1161,13 +1309,35 @@ function spawnParticles(){const c=document.getElementById('particles');if(!c)ret
     var reopenBtn=document.getElementById('ambientReopen');
     var volSlider=document.getElementById('ambientVol');
 
-    closeBtn.onclick=function(){panel.classList.add('hidden');reopenBtn.style.display='flex'};
-    reopenBtn.onclick=function(){panel.classList.remove('hidden');reopenBtn.style.display='none'};
+    closeBtn.onclick=function(){panel.classList.add('hidden');if(reopenBtn)reopenBtn.style.display='flex'};
+    if(reopenBtn){
+      reopenBtn.onclick=function(){panel.classList.remove('hidden');reopenBtn.style.display='none'};
+      reopenBtn.style.display='none';
+    }
 
-    document.querySelectorAll('.type-btn').forEach(function(b){b.onclick=function(){document.querySelectorAll('.type-btn').forEach(function(x){x.classList.remove('active')});b.classList.add('active');start(b.dataset.type)}});
-    volSlider.oninput=function(e){setVol(parseFloat(e.target.value))};
+    document.querySelectorAll('.type-btn').forEach(function(b){
+      b.onclick=function(){
+        document.querySelectorAll('.type-btn').forEach(function(x){x.classList.remove('active')});
+        b.classList.add('active');
+        start(b.dataset.type);
+      }
+    });
+    if(volSlider)volSlider.oninput=function(e){setVol(parseFloat(e.target.value))};
 
-    var last=localStorage.getItem(K);if(last){try{var o=JSON.parse(last);if(o.type&&TYPES.includes(o.type)){mode=o.type;document.querySelectorAll('.type-btn').forEach(function(b){b.classList.toggle('active',b.dataset.type===o.type)})}if(o.volume!==undefined){vol=o.volume;volSlider.value=vol}}catch(_){}}}
+    var last=localStorage.getItem(K);
+    if(last){
+      try{
+        var o=JSON.parse(last);
+        if(o.type&&TYPES.includes(o.type)){
+          mode=o.type;
+          document.querySelectorAll('.type-btn').forEach(function(b){
+            b.classList.toggle('active',b.dataset.type===o.type);
+          });
+        }
+        if(o.volume!==undefined){vol=o.volume;if(volSlider)volSlider.value=vol}
+      }catch(_){}
+    }
+  }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init()
 })();
