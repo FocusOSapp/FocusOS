@@ -111,8 +111,8 @@ main::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
 .mode-tabs{display:flex;gap:4px;background:rgba(255,255,255,.04);padding:5px;border-radius:12px}
 .mode-tab{border:none;background:transparent;padding:10px 20px;border-radius:10px;color:var(--text2);font-weight:600;cursor:pointer;transition:var(--transition);font-family:var(--font);font-size:13px}
 .mode-tab.active{background:rgba(255,255,255,.08);color:var(--text)}
-.circle-wrap{position:relative;width:300px;height:300px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 12px 32px var(--accent-glow))}
-.circle-wrap svg{transform:rotate(-90deg)}
+.circle-wrap{position:relative;width:280px;height:280px;max-width:100%;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 12px 32px var(--accent-glow))}
+.circle-wrap svg{transform:rotate(-90deg);width:100%;height:100%}
 .timer-bg{fill:none;stroke:var(--surface3);stroke-width:14}
 .timer-progress{fill:none;stroke:url(#grad);stroke-width:14;stroke-linecap:round;transition:stroke-dashoffset .4s ease}
 .timer-center{position:absolute;text-align:center}
@@ -404,8 +404,8 @@ body.fullscreen .timer-card{max-width:420px}
   main{padding:18px 14px 100px}
   .controls{flex-direction:column}
   .btn{width:100%;justify-content:center}
-  .circle-wrap{width:200px;height:200px}
-  .timer-value{font-size:38px}
+  .circle-wrap{width:220px;height:220px}
+  .timer-value{font-size:42px}
   .timer-card{padding:28px 20px}
   .info-grid{grid-template-columns:1fr}
   .habit-table{grid-template-columns:120px repeat(31,26px)}
@@ -423,6 +423,7 @@ body.fullscreen .timer-card{max-width:420px}
   .community-stat .num{font-size:28px}
   .stat-value{font-size:24px}
   .score-val{font-size:32px}
+  .mode-tab{padding:8px 14px;font-size:12px}
 }
 </style>
 </head>
@@ -479,7 +480,7 @@ body.fullscreen .timer-card{max-width:420px}
             <button class="mode-tab" data-mode="long">Long Break</button>
           </div>
           <div class="circle-wrap">
-            <svg width="260" height="260">
+            <svg viewBox="0 0 260 260" width="100%" height="100%">
               <defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="var(--accent)"/><stop offset="100%" stop-color="var(--accent2)"/></linearGradient></defs>
               <circle class="timer-bg" cx="130" cy="130" r="105"></circle>
               <circle class="timer-progress" id="timerPath" cx="130" cy="130" r="105" stroke-dasharray="660" stroke-dashoffset="0"></circle>
